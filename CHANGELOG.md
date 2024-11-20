@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-19](https://github.com/rimi-itk/dpl_pretix/pull/19)
+  Set currency on clone
 * [PR-17](https://github.com/rimi-itk/dpl_pretix/pull/17)
   Cleaned up handling of ticket URL element
 * [PR-16](https://github.com/rimi-itk/dpl_pretix/pull/16)
