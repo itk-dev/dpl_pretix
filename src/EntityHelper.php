@@ -3,6 +3,8 @@
 namespace Drupal\dpl_pretix;
 
 use Drupal\Component\Utility\Random;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -45,6 +47,13 @@ final class EntityHelper {
   private const VARIATION_PRICE_OVERRIDES = 'variation_price_overrides';
 
   /**
+   * DPL Event settings (cf. /admin/config/dpl-event/settings).
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  private ImmutableConfig $dplEventSettings;
+
+  /**
    * The event series storage.
    *
    * @var \Drupal\recurring_events\EventSeriesStorageInterface
@@ -57,8 +66,10 @@ final class EntityHelper {
     private readonly PretixHelper $pretixHelper,
     private readonly MessengerInterface $messenger,
     private readonly LoggerInterface $logger,
+    ConfigFactoryInterface $configFactory,
     EntityTypeManagerInterface $entityTypeManager,
   ) {
+    $this->dplEventSettings = $configFactory->get('dpl_event.settings');
     /** @var \Drupal\recurring_events\EventSeriesStorageInterface $eventSeriesStorage */
     $eventSeriesStorage = $entityTypeManager->getStorage('eventseries');
     $this->eventSeriesStorage = $eventSeriesStorage;
@@ -748,6 +759,8 @@ final class EntityHelper {
 
     // Important: meta_data value must be an object!
     $data['meta_data'] = (object) ($data['meta_data'] ?? []);
+
+    $data['currency'] = $this->dplEventSettings->get('price_currency') ?? 'DKK';
 
     return $data;
   }
