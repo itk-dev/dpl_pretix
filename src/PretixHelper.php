@@ -7,7 +7,6 @@ use Drupal\dpl_pretix\Exception\ValidationException;
 use Drupal\dpl_pretix\Pretix\ApiClient\Client;
 use Drupal\dpl_pretix\Settings\PretixSettings;
 use function Safe\json_encode;
-use function Safe\sprintf;
 
 /**
  * Pretix helper.

@@ -6,7 +6,6 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\dpl_pretix\Entity\EventData;
 use Drupal\recurring_events\EventInterface;
-use function Safe\array_combine;
 
 /**
  * Event data manager.

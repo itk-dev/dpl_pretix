@@ -12,12 +12,8 @@ use Drupal\recurring_events\Entity\EventInstance;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use function Safe\array_combine;
-use function Safe\ksort;
 use function Safe\preg_match;
 use function Safe\preg_replace;
-use function Safe\sprintf;
-use function Safe\substr;
 
 /**
  * Pretix debug controller.

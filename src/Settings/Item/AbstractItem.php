@@ -3,7 +3,6 @@
 namespace Drupal\dpl_pretix\Settings\Item;
 
 use Drupal\dpl_pretix\Settings;
-use function Safe\sprintf;
 
 /**
  * Abstract item.
