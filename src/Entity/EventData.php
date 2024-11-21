@@ -8,7 +8,6 @@ use Drupal\recurring_events\EventInterface;
 use Safe\Exceptions\JsonException;
 use function Safe\json_decode;
 use function Safe\preg_match;
-use function Safe\sprintf;
 
 /**
  * Event data for event series and event instance.

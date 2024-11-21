@@ -17,7 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use function Safe\json_decode;
 use function Safe\json_encode;
-use function Safe\sprintf;
 
 /**
  * A Drush command file.

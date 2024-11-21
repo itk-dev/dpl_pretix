@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-20](https://github.com/rimi-itk/dpl_pretix/pull/20)
+  Removed use of deprecated Safe functions
 * [PR-18](https://github.com/rimi-itk/dpl_pretix/pull/18)
   Fixed handling of quota items
 * [PR-19](https://github.com/rimi-itk/dpl_pretix/pull/19)

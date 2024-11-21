@@ -24,7 +24,6 @@ use Drupal\recurring_events\EventInterface;
 use Drupal\recurring_events\EventSeriesStorageInterface;
 use Psr\Log\LoggerInterface;
 use Safe\DateTimeImmutable;
-use function Safe\sprintf;
 
 /**
  * Entity helper.
