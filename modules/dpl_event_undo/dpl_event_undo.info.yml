@@ -1,0 +1,8 @@
+name: 'Event undo'
+type: module
+description: 'Undo some things that Event does'
+package: Custom
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - dpl_event:dpl_event

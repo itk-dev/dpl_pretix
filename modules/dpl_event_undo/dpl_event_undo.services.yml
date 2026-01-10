@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+
+  Drupal\dpl_event_undo\EventSubscriber\UndoEventInstanceEditRedirect:
+    tags:
+      - { name: event_subscriber }
+
+  Drupal\dpl_event_undo\Routing\UndoRouteSubscriber:
+    tags:
+      - { name: event_subscriber }
+
