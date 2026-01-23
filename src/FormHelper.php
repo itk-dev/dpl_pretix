@@ -30,6 +30,7 @@ class FormHelper {
   public const ELEMENT_TEMPLATE_EVENT = 'template_event';
   public const ELEMENT_PSP_ELEMENT = 'psp_element';
 
+  // @see /admin/structure/events/instance/types/eventinstance_type/default/edit/fields
   public const FIELD_TICKET_URL = 'field_event_link';
   public const FIELD_TICKET_CATEGORIES = 'field_ticket_categories';
   public const FIELD_TICKET_CAPACITY = 'field_ticket_capacity';
@@ -85,6 +86,12 @@ class FormHelper {
    * Implements hook_form_alter().
    */
   public function formAlter(array &$form, FormStateInterface $formState, string $formId): void {
+    if ('eventseries_default_edit_form' === $formId && isset($form['diff'])) {
+      $form['_diff'] = [
+        '#markup' => __METHOD__,
+      ];
+    }
+
     $formObject = $formState->getFormObject();
     if (!($formObject instanceof ContentEntityFormInterface)) {
       return;
@@ -124,6 +131,16 @@ class FormHelper {
 
     $settings = $this->settings->getPretixSettings();
     if (!$settings->isReady()) {
+      $warnings = [
+        $this->t('No pretix settings found for domain %domain.', ['%domain' => $settings->domain]),
+      ];
+
+      if ($this->currentUser->hasPermission('administer dpl_pretix settings')) {
+        $warnings[] = Link::fromTextAndUrl($this->t('Edit pretix settings'),
+          Url::fromRoute('dpl_pretix.settings')
+        )->toRenderable();
+      }
+
       $form[self::FORM_KEY]['warning'] = [
         // Wrap message in container to make states work.
         '#type' => 'container',
@@ -131,9 +148,7 @@ class FormHelper {
         'message' => [
           '#theme' => 'status_messages',
           '#message_list' => [
-            'warning' => [
-              $this->t('No pretix settings found for domain %domain.', ['%domain' => $settings->domain]),
-            ],
+            'warning' => $warnings,
           ],
         ],
       ];

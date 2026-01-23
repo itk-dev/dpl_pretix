@@ -39,9 +39,6 @@ final class EntityHelper {
    */
   private Random $random;
 
-  // @see /admin/structure/events/instance/types/eventinstance_type/default/edit/fields
-  private const EVENT_TICKET_LINK_FIELD = 'field_event_link';
-
   private const ITEM_PRICE_OVERRIDES = 'item_price_overrides';
   private const VARIATION_PRICE_OVERRIDES = 'variation_price_overrides';
 
@@ -1097,9 +1094,9 @@ final class EntityHelper {
    */
   private function setTicketUrl(EventSeries|EventInstance $event, EventData $data): void {
     $url = $data->getEventShopUrl();
-    if ($url && $url !== $event->get(self::EVENT_TICKET_LINK_FIELD)
+    if ($url && $url !== $event->get(FormHelper::FIELD_TICKET_URL)
       ->getString()) {
-      $event->set(self::EVENT_TICKET_LINK_FIELD, $url);
+      $event->set(FormHelper::FIELD_TICKET_URL, $url);
       $event->save();
     }
   }
