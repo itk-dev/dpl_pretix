@@ -13,6 +13,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\recurring_events\Entity\EventInstance;
 use Drupal\recurring_events\Entity\EventSeries;
@@ -25,17 +26,17 @@ class FormHelper {
   use StringTranslationTrait;
   use DependencySerializationTrait;
 
-  public const FORM_KEY = 'dpl_pretix';
-  public const ELEMENT_MAINTAIN_COPY = 'maintain_copy';
-  public const ELEMENT_TEMPLATE_EVENT = 'template_event';
-  public const ELEMENT_PSP_ELEMENT = 'psp_element';
+  public const string FORM_KEY = 'dpl_pretix';
+  public const string ELEMENT_MAINTAIN_COPY = 'maintain_copy';
+  public const string ELEMENT_TEMPLATE_EVENT = 'template_event';
+  public const string ELEMENT_PSP_ELEMENT = 'psp_element';
 
   // @see /admin/structure/events/instance/types/eventinstance_type/default/edit/fields
-  public const FIELD_TICKET_URL = 'field_event_link';
-  public const FIELD_TICKET_CATEGORIES = 'field_ticket_categories';
-  public const FIELD_TICKET_CAPACITY = 'field_ticket_capacity';
+  public const string FIELD_TICKET_URL = 'field_event_link';
+  public const string FIELD_TICKET_CATEGORIES = 'field_ticket_categories';
+  public const string FIELD_TICKET_CAPACITY = 'field_ticket_capacity';
 
-  public const CUSTOM_FORM_VALUES = 'custom_form_values';
+  public const string CUSTOM_FORM_VALUES = 'custom_form_values';
 
   public function __construct(
     private readonly Settings $settings,
@@ -110,6 +111,15 @@ class FormHelper {
   }
 
   /**
+   * Implements hook_field_group_form_process_build_alter().
+   */
+  public function fieldGroupFormProcessBuildAlter(array &$element, FormStateInterface $formState, array &$form): void {
+    if (isset($form[self::FORM_KEY])) {
+      $this->placeElementOnForm($form[self::FORM_KEY], $form);
+    }
+  }
+
+  /**
    * Alters event form.
    */
   private function formAlterEventSeries(
@@ -122,12 +132,16 @@ class FormHelper {
       ?? $this->eventDataHelper->createEventData($entity);
 
     $form[self::FORM_KEY] = [
-      '#weight' => $this->settings->getEventForm()->weight ?? 9999,
       '#type' => 'details',
       '#title' => $this->t('pretix'),
       '#tree' => TRUE,
       '#open' => TRUE,
     ];
+    $this->placeElementOnForm($form[self::FORM_KEY], $form);
+
+    if ($this->settings->getEventForm()->disableFieldRelevantTicketManager) {
+      $form[EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER]['#access'] = FALSE;
+    }
 
     $settings = $this->settings->getPretixSettings();
     if (!$settings->isReady()) {
@@ -314,12 +328,12 @@ class FormHelper {
         $this->t('This field is managed by pretix for this event instance.'));
 
       $form[self::FORM_KEY] = [
-        '#weight' => $this->settings->getEventForm()->weight ?? 9999,
         '#type' => 'details',
         '#title' => $this->t('pretix'),
         '#tree' => TRUE,
         '#open' => TRUE,
       ];
+      $this->placeElementOnForm($form[self::FORM_KEY], $form);
 
       $instanceData = $this->eventDataHelper->getEventData($entity);
       if ($pretixAdminUrl = $instanceData?->getEventAdminUrl()) {
@@ -404,6 +418,27 @@ class FormHelper {
       // @fixme We only handle link fields for now.
       if (isset($element['widget'][0]['uri']['#description']['#items'])) {
         $element['widget'][0]['uri']['#description']['#items'][] = $reason;
+      }
+    }
+  }
+
+  /**
+   * Place element on form.
+   */
+  private function placeElementOnForm(array &$element, array $form, ?string $anchor = NULL): void {
+    $anchor ??= (string) $this->settings->getEventForm()->location;
+
+    if (EventFormSettings::LOCATION_TOP === $anchor) {
+      $element['#weight'] = -9999;
+    }
+    elseif (EventFormSettings::LOCATION_BOTTOM === $anchor) {
+      $element['#weight'] = 9999;
+    }
+    elseif (str_starts_with($anchor, EventFormSettings::LOCATION_BEFORE_PREFIX)) {
+      $followingSibling = substr($anchor,
+        strlen(EventFormSettings::LOCATION_BEFORE_PREFIX));
+      if (isset($form['#fieldgroups'][$followingSibling]->weight)) {
+        $element['#weight'] = $form['#fieldgroups'][$followingSibling]->weight;
       }
     }
   }

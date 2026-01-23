@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-22](https://github.com/rimi-itk/dpl_pretix/pull/22)
+  * Added and improved event form settings
+  * Made if possible to disallow deleting event instances
 * [PR-20](https://github.com/rimi-itk/dpl_pretix/pull/20)
   Removed use of deprecated Safe functions
 * [PR-18](https://github.com/rimi-itk/dpl_pretix/pull/18)

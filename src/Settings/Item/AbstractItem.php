@@ -28,8 +28,11 @@ abstract class AbstractItem {
    *
    * @param array<string, mixed> $values
    *   The values.
+   * @param bool $throwExceptionOnMissingProperty
+   *   If set, an exception is thrown when setting an undefined property.
+   *   If not set, undefined properties are silently ignored.
    */
-  public function __construct(array $values) {
+  public function __construct(array $values, bool $throwExceptionOnMissingProperty = FALSE) {
     $this->values = [];
 
     foreach (static::$listProperties as $property => $class) {
@@ -41,11 +44,18 @@ abstract class AbstractItem {
     foreach ($values as $key => $value) {
       $name = Settings::kebab2camel($key);
       if (!property_exists($this, $name)) {
-        throw new \RuntimeException(
-          $name !== $key
-            ? sprintf('Property "%s" ("%s") does not exist in class %s.', $name, $key, static::class)
-            : sprintf('Property "%s" does not exist in class %s.', $name, static::class)
-        );
+        if ($throwExceptionOnMissingProperty) {
+          throw new \RuntimeException(
+            $name !== $key
+              ? sprintf('Property "%s" ("%s") does not exist in class %s.',
+              $name, $key, static::class)
+              : sprintf('Property "%s" does not exist in class %s.', $name,
+              static::class)
+          );
+        }
+        else {
+          continue;
+        }
       }
       $this->$name = $value;
       $this->values[Settings::camel2kebab($name)] = $value;

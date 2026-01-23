@@ -3,12 +3,15 @@
 namespace Drupal\dpl_pretix;
 
 use Drupal\Component\Utility\Random;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\dpl_pretix\Entity\EventData;
 use Drupal\dpl_pretix\Exception\SynchronizeException;
@@ -1153,6 +1156,23 @@ final class EntityHelper {
     $this->setEventHasPendingInstances($event);
 
     return $events_to_create;
+  }
+
+  /**
+   * Implements hook_entity_access().
+   */
+  public function access(
+    EntityInterface $entity,
+    string $operation,
+    AccountInterface $account,
+  ): AccessResultInterface {
+    if (!$account->hasPermission('bypass node access') && 'delete' === $operation && $entity instanceof EventInstance) {
+      $roles = $account->getRoles();
+      $allowedRoles = $this->settings->getEventForm()->getRolesThatCanDeleteEventInstances();
+      return AccessResult::forbiddenIf(empty(array_intersect($roles, $allowedRoles)));
+    }
+
+    return AccessResult::neutral();
   }
 
 }
