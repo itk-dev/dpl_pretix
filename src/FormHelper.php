@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -87,12 +88,6 @@ class FormHelper {
    * Implements hook_form_alter().
    */
   public function formAlter(array &$form, FormStateInterface $formState, string $formId): void {
-    if ('eventseries_default_edit_form' === $formId && isset($form['diff'])) {
-      $form['_diff'] = [
-        '#markup' => __METHOD__,
-      ];
-    }
-
     $formObject = $formState->getFormObject();
     if (!($formObject instanceof ContentEntityFormInterface)) {
       return;
@@ -116,6 +111,65 @@ class FormHelper {
   public function fieldGroupFormProcessBuildAlter(array &$element, FormStateInterface $formState, array &$form): void {
     if (isset($form[self::FORM_KEY])) {
       $this->placeElementOnForm($form[self::FORM_KEY], $form);
+      $this->hideDatesGroup($form, $formState);
+    }
+  }
+
+  /**
+   * Hide the Dates group depending on event series state.
+   */
+  private function hideDatesGroup(array &$form, FormStateInterface $formState) {
+    if ($event = $this->getEventSeriesEntity($formState)) {
+      $maintainCopy = (bool) $this->eventDataHelper->getEventData($event)?->maintainCopy;
+      if ($event->isNew() || !$maintainCopy) {
+        return;
+      }
+
+      // Make sure that user cannot “Add more" instances.
+      $form['custom_date']['widget'][1]['#access'] = FALSE;
+      $form['custom_date']['widget']['add_more']['#access'] = FALSE;
+      // Manipulating the widget cardinality does not work as hoped.
+      // $form['custom_date']['widget']['#cardinality'] = 1;
+      // $form['custom_date']['widget']['#cardinality_multiple'] =FALSE;
+      // CSS is our friend in need.
+      $form['custom_date']['#attributes']['class'][] = 'dpl-pretix-single-data-only';
+      $form['#attached']['library'][] = 'dpl_pretix/event_series_form';
+
+      // Hide Dates group if more than one instance exists in series.
+      // If an event series has only a single instance, it's safe to edit the
+      // instance on the event series form (cf.
+      // https://github.com/danskernesdigitalebibliotek/dpl-cms/blob/develop/web/modules/custom/dpl_event/src/Plugin/EventInstanceCreator/DplEventInstanceCreator.php#L31-L34).
+      $datesGroupKey = 'group_dates';
+      if ((int) $event?->getInstanceCount() > 1
+        && isset($form['#fieldgroups'][$datesGroupKey]) && isset($form[$datesGroupKey])) {
+        $weight = $form['#fieldgroups'][$datesGroupKey]->weight;
+        // unset($form['#fieldgroups'][$datesGroupKey]);
+        // unset($form[$datesGroupKey]);
+        // Hide all elements in the Dates group.
+        foreach (Element::children($form) as $key) {
+          if ($datesGroupKey === ($form[$key]['#group'] ?? NULL)) {
+            $form[$key]['#access'] = FALSE;
+          }
+        }
+
+        $datesGroupInfoKey = $datesGroupKey . '_info';
+        $form[$datesGroupInfoKey] = [
+          '#weight' => $weight,
+          '#theme' => 'status_messages',
+          '#message_list' => [
+            MessengerInterface::TYPE_STATUS => [
+              $this->t('This event series uses pretix and has multiple event instances. The instances must be edited on <a href=":edit_instances_url">the @edit_instances page</a>.',
+                [
+                  '@edit_instances' => $this->t('Edit instances'),
+                  ':edit_instances_url' => Url::fromRoute('view.event_instance_list.page_1',
+                    [
+                      'eventseries' => $event->id(),
+                    ])->toString(TRUE)->getGeneratedUrl(),
+                ]),
+            ],
+          ],
+        ];
+      }
     }
   }
 
