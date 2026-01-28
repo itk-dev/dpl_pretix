@@ -35,6 +35,8 @@ class EventFormSettings extends AbstractSettings {
 
   /**
    * Roles that can delete event instances.
+   *
+   * @var array<string, string>
    */
   public array $rolesThatCanDeleteEventInstances = [];
 

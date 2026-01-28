@@ -51,6 +51,4 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: |
-          docker compose build
-          docker compose run --user root --rm php composer install
-          docker compose run --user root --rm --env COMPOSER_AUTH php scripts/code-analysis
+          ./scripts/code-analysis
