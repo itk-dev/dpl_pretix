@@ -1,56 +1,48 @@
 # https://taskfile.dev
 
-version: '3'
+version: "3"
 
 tasks:
-  dev:coding-standards:markdown:apply:
+  coding-standards:markdown:apply:
     desc: Apply Markdown coding standards
     cmds:
-      - docker run --rm --volume $PWD:/md peterdavehello/markdownlint markdownlint --ignore LICENSE.md --ignore vendor/ '**/*.md' --dot --fix
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm markdownlint markdownlint '**/*.md' --fix
 
-  dev:coding-standards:markdown:check:
+  coding-standards:markdown:check:
     desc: Apply and check Markdown coding standards
     cmds:
-      - task: dev:coding-standards:markdown:apply
-      - docker run --rm --volume $PWD:/md peterdavehello/markdownlint markdownlint --ignore LICENSE.md --ignore vendor/ '**/*.md' --dot
+      - task: coding-standards:markdown:apply
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm markdownlint markdownlint '**/*.md'
 
-  dev:coding-standards:php:apply:
+  coding-standards:php:apply:
     desc: Apply PHP coding standards
     cmds:
-      - task: dev:php
+      - task: php
         vars:
-          ARGS: vendor/bin/phpcbf
+          TASK_ARGS: vendor/bin/phpcbf
 
-  dev:coding-standards:php:check:
+  coding-standards:php:check:
     desc: Apply and check PHP coding standards
     cmds:
-      - task: dev:coding-standards:php:apply
-      - task: dev:php
+      - task: coding-standards:php:apply
+      - task: php
         vars:
-          ARGS: vendor/bin/phpcs
+          TASK_ARGS: vendor/bin/phpcs
 
-  dev:coding-standards:check:
+  coding-standards:check:
     desc: Apply and check coding standards
     cmds:
-      - task dev:coding-standards:markdown:apply
-      - task dev:coding-standards:markdown:check
-      - task dev:coding-standards:php:apply
-      - task dev:coding-standards:php:check
+      - task: coding-standards:markdown:check
+      - task: coding-standards:php:check
 
-  dev:code-analysis:
+  code-analysis:
     desc: Analyse code
     cmds:
-      - task: dev:php
-        vars:
-          ARGS: scripts/code-analysis
-
-  dev:php:
-    internal: true
-    desc: Run php command
-    cmds:
-      - docker compose build
-      - docker compose run --rm php composer install
-      - docker compose run --rm --interactive --tty php {{.ARGS}}
+      - ./scripts/code-analysis
 
   build:pretix-api-client:
     desc: Build customized version of https://github.com/itk-dev/pretix-api-client-php/
@@ -65,3 +57,25 @@ tasks:
       - patch --strip=1 < src/Pretix/ApiClient/patches/pretix-api-client.patch
       # Add missing functions
       - patch --strip=1 < src/Pretix/ApiClient/patches/pretix-api-client-functions.patch
+
+  compose:
+    cmds:
+      - docker compose {{.TASK_ARGS}} {{.CLI_ARGS}}
+    internal: true
+
+  php:
+    desc: Run php command
+    cmds:
+      - task: compose
+        vars:
+          TASK_ARGS: pull --ignore-buildable
+      - task: compose
+        vars:
+          TASK_ARGS: build
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm phpfpm composer install
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm --interactive --tty phpfpm {{.TASK_ARGS}} {{.CLI_ARGS}}
+    internal: true

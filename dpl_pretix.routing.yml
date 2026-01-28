@@ -1,28 +1,28 @@
 dpl_pretix.settings:
-  path: '/admin/config/dpl_pretix'
+  path: "/admin/config/dpl_pretix"
   defaults:
-    _title: 'pretix'
+    _title: "pretix"
     _form: '\Drupal\dpl_pretix\Form\SettingsForm'
   requirements:
-    _permission: 'administer dpl_pretix settings'
+    _permission: "administer dpl_pretix settings"
 
 dpl_pretix.settings_debug:
-  path: '/admin/config/dpl_pretix/admin/{action}'
+  path: "/admin/config/dpl_pretix/admin/{action}"
   defaults:
-    _title: 'pretix debug'
+    _title: "pretix debug"
     _controller: '\Drupal\dpl_pretix\Controller\AdminController::main'
     action: ~
   options:
     no_cache: true
   requirements:
-    _permission: 'administer dpl_pretix settings'
+    _permission: "administer dpl_pretix settings"
 
 dpl_pretix.pretix_webhook:
-  path: '/dpl_pretix/pretix/webhook'
+  path: "/dpl_pretix/pretix/webhook"
   defaults:
     _controller: '\Drupal\dpl_pretix\Controller\PretixWebhookController::main'
     # @see https://docs.pretix.eu/en/latest/api/webhooks.html
-    _title: 'pretix webhook'
+    _title: "pretix webhook"
   methods: [POST]
   requirements:
-    _permission: 'access content'
+    _permission: "access content"

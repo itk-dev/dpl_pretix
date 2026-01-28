@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Module file for dpl_pretix.
+ */
+
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -59,11 +64,6 @@ function dpl_pretix_entity_prepare_form(EntityInterface $entity, string $operati
 
 /**
  * Implements hook_recurring_events_event_instances_pre_create_alter().
- *
- * @param array<string, mixed> $events_to_create
- *    The events to create.
- * @param \Drupal\recurring_events\Entity\EventSeries $event
- *    The event.
  */
 function dpl_pretix_recurring_events_event_instances_pre_create_alter(array $events_to_create, EventSeries $event): array {
   return _dpl_pretix_entity_helper()->recurringEventsEventInstancesPreCreateAlter($events_to_create, $event);

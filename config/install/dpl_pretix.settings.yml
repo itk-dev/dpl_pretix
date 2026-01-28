@@ -15,8 +15,8 @@ pretix:
     api_token: ~
     # Template event short form
     template_events: ~
-    event_slug_template: '{id}'
-    default_language_code: 'en'
+    event_slug_template: "{id}"
+    default_language_code: "en"
 
   test:
     domain: ~
@@ -27,8 +27,8 @@ pretix:
     api_token: ~
     # Template event short form
     template_events: ~
-    event_slug_template: 'test-{id}'
-    default_language_code: 'en'
+    event_slug_template: "test-{id}"
+    default_language_code: "en"
 
 libraries: {}
 #   -
