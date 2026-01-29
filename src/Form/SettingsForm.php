@@ -232,7 +232,7 @@ final class SettingsForm extends ConfigFormBase {
           '#title' => $this->t('Event slug template'),
           '#default_value' => $defaults->eventSlugTemplate,
           '#required' => TRUE,
-          '#description' => $this->t('Template used to generate event short forms in pretix. Placeholders<br/><code>{id}</code>: the event (node) id<br/><code>{random}</code>: a random string'),
+          '#description' => $this->t('Template used to generate event short forms in pretix. Placeholders<br /><code>{id}</code>: the event (node) id<br /><code>{random}</code>: a random string'),
         ],
 
         'default_language_code' => [
