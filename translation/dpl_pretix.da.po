@@ -1,0 +1,575 @@
+# Danish translation of module dpl_pretix
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2026-01-29 15:51+0100\n"
+"PO-Revision-Date: 2026-01-29 15:51+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: da\n"
+
+#, fuzzy
+msgid ""
+"Notice: The settings on this page requires knowledge about <a "
+"href=\":pretix_eventsdocs_url\">pretix events</a> and <a "
+"href=\":pretix_docs_url\">pretix in general</a>."
+msgstr ""
+"__Notice: The settings on this page requires knowledge about <a "
+"href=\":pretix_eventsdocs_url\">pretix events</a> and <a "
+"href=\":pretix_docs_url\">pretix in general</a>."
+
+#, fuzzy
+msgid ""
+"More settings will become available when pretix settings are saved and "
+"are valid"
+msgstr ""
+"__More settings will become available when pretix settings are saved "
+"and are valid"
+
+#, fuzzy
+msgid "Admin pretix"
+msgstr "__Admin pretix"
+
+#, fuzzy
+msgid "Ping API"
+msgstr "__Ping API"
+
+#, fuzzy
+msgid "Note: Pinging the API will use saved config."
+msgstr "__Note: Pinging the API will use saved config."
+
+#, fuzzy
+msgid "pretix (%section)"
+msgstr "__pretix (%section)"
+
+#, fuzzy
+msgid "active"
+msgstr "__active"
+
+#, fuzzy
+msgid "Domain"
+msgstr "__Domain"
+
+#, fuzzy
+msgid ""
+"The Drupal domain, e.g. <code>dpl-cms.dk</code>, that these pretix "
+"settings apply to."
+msgstr ""
+"__The Drupal domain, e.g. <code>dpl-cms.dk</code>, that these pretix "
+"settings apply to."
+
+#, fuzzy
+msgid "URL"
+msgstr "__URL"
+
+#, fuzzy
+msgid ""
+"Enter a valid pretix service endpoint without path info, such as "
+"https://www.pretix.eu/"
+msgstr ""
+"__Enter a valid pretix service endpoint without path info, such as "
+"https://www.pretix.eu/"
+
+#, fuzzy
+msgid "Organizer"
+msgstr "__Organizer"
+
+#, fuzzy
+msgid ""
+"This is the default organizer short form used when connecting to "
+"pretix. If you provide short form/API token for a specific library "
+"(below), events related to that library will use that key instead of "
+"the default key."
+msgstr ""
+"__This is the default organizer short form used when connecting to "
+"pretix. If you provide short form/API token for a specific library "
+"(below), events related to that library will use that key instead of "
+"the default key."
+
+#, fuzzy
+msgid "The API token of the Organizer Team"
+msgstr "__The API token of the Organizer Team"
+
+#, fuzzy
+msgid ""
+"This is the default API token used when connecting to pretix. If you "
+"provide short form/API token for a specific library (below), events "
+"related to that library will use that key instead of the default key."
+msgstr ""
+"__This is the default API token used when connecting to pretix. If you "
+"provide short form/API token for a specific library (below), events "
+"related to that library will use that key instead of the default key."
+
+#, fuzzy
+msgid "Event slug template"
+msgstr "__Event slug template"
+
+#, fuzzy
+msgid ""
+"Template used to generate event short forms in pretix. "
+"Placeholders<br/><code>{id}</code>: the event (node) "
+"id<br/><code>{random}</code>: a random string"
+msgstr ""
+"__Template used to generate event short forms in pretix. "
+"Placeholders<br/><code>{id}</code>: the event (node) "
+"id<br/><code>{random}</code>: a random string"
+
+#, fuzzy
+msgid "Default language code"
+msgstr "__Default language code"
+
+#, fuzzy
+msgid "Default language code used for pretix events"
+msgstr "__Default language code used for pretix events"
+
+#, fuzzy
+msgid "Template events used to create new events in pretix"
+msgstr "__Template events used to create new events in pretix"
+
+#, fuzzy
+msgid ""
+"Define one template per line on the form <code>«template short "
+"name»: «display name»</code>. Example: %example%"
+msgstr ""
+"__Define one template per line on the form <code>«template short "
+"name»: «display name»</code>. Example: %example%"
+
+#, fuzzy
+msgid "pretix webhook URL"
+msgstr "__pretix webhook URL"
+
+#, fuzzy
+msgid ""
+"The <a href=\":pretix_webhook_url\">pretix webhook URL</a> used by "
+"pretix to send notifications."
+msgstr ""
+"__The <a href=\":pretix_webhook_url\">pretix webhook URL</a> used by "
+"pretix to send notifications."
+
+#, fuzzy
+msgid "No pretix settings are currently active (based on the domain %domain)."
+msgstr ""
+"__No pretix settings are currently active (based on the domain "
+"%domain)."
+
+#, fuzzy
+msgid "@value is not a valid domain name"
+msgstr "__@value is not a valid domain name"
+
+#, fuzzy
+msgid "PSP elements"
+msgstr "__PSP elements"
+
+#, fuzzy
+msgid "pretix PSP property name"
+msgstr "__pretix PSP property name"
+
+#, fuzzy
+msgid ""
+"The name of the organizer metadata property for the PSP element in "
+"pretix (case sensitive), example <code>PSP</code>."
+msgstr ""
+"__The name of the organizer metadata property for the PSP element in "
+"pretix (case sensitive), example <code>PSP</code>."
+
+#, fuzzy
+msgid "Available PSP elements"
+msgstr "__Available PSP elements"
+
+#, fuzzy
+msgid "Add PSP element"
+msgstr "__Add PSP element"
+
+#, fuzzy
+msgid "Remove PSP element"
+msgstr "__Remove PSP element"
+
+#, fuzzy
+msgid "PSP element"
+msgstr "__PSP element"
+
+#, fuzzy
+msgid "PSP element (default)"
+msgstr "__PSP element (default)"
+
+#, fuzzy
+msgid "Name"
+msgstr "__Name"
+
+#, fuzzy
+msgid "Value"
+msgstr "__Value"
+
+#, fuzzy
+msgid "pretix event node defaults"
+msgstr "__pretix event node defaults"
+
+#, fuzzy
+msgid "Default event capacity"
+msgstr "__Default event capacity"
+
+#, fuzzy
+msgid "The default capacity for new events."
+msgstr "__The default capacity for new events."
+
+#, fuzzy
+msgid "Create and update in pretix"
+msgstr "__Create and update in pretix"
+
+#, fuzzy
+msgid "Default value of %field on new event series."
+msgstr "__Default value of %field on new event series."
+
+#, fuzzy
+msgid "Default ticket category name"
+msgstr "__Default ticket category name"
+
+#, fuzzy
+msgid "The name of the default ticket category added to an event."
+msgstr "__The name of the default ticket category added to an event."
+
+#, fuzzy
+msgid "Tickets"
+msgstr "__Tickets"
+
+#, fuzzy
+msgid "Event form"
+msgstr "__Event form"
+
+#, fuzzy
+msgid "Top"
+msgstr "__Top"
+
+#, fuzzy
+msgid "Before %group"
+msgstr "__Before %group"
+
+#, fuzzy
+msgid "Bottom"
+msgstr "__Bottom"
+
+#, fuzzy
+msgid "Location of pretix section"
+msgstr "__Location of pretix section"
+
+#, fuzzy
+msgid "The location of the pretix section on event form."
+msgstr "__The location of the pretix section on event form."
+
+#, fuzzy
+msgid "Disable %field field"
+msgstr "__Disable %field field"
+
+#, fuzzy
+msgid "If checked, the %field field will be disabled on the event form"
+msgstr "__If checked, the %field field will be disabled on the event form"
+
+#, fuzzy
+msgid "Roles that can delete event instances"
+msgstr "__Roles that can delete event instances"
+
+#, fuzzy
+msgid "Select all roles that should be allowed to delete event instances."
+msgstr "__Select all roles that should be allowed to delete event instances."
+
+#, fuzzy
+msgid "Cannot connect to pretix (@domain)"
+msgstr "__Cannot connect to pretix (@domain)"
+
+#, fuzzy
+msgid ""
+"Template event <a href=\":pretix_event_url\">@event</a> is not valid: "
+"@errors"
+msgstr ""
+"__Template event <a href=\":pretix_event_url\">@event</a> is not "
+"valid: @errors"
+
+#, fuzzy
+msgid "Invalid template events in @domain (@message)."
+msgstr "__Invalid template events in @domain (@message)."
+
+#, fuzzy
+msgid "Pinged API successfully."
+msgstr "__Pinged API successfully."
+
+#, fuzzy
+msgid "Pinging API failed: @message"
+msgstr "__Pinging API failed: @message"
+
+#, fuzzy
+msgid "Edit instances"
+msgstr "__Edit instances"
+
+#, fuzzy
+msgid ""
+"This event series uses pretix and has multiple event instances. The "
+"instances must be edited on <a href=\":edit_instances_url\">the "
+"@edit_instances page</a>."
+msgstr ""
+"__This event series uses pretix and has multiple event instances. The "
+"instances must be edited on <a href=\":edit_instances_url\">the "
+"@edit_instances page</a>."
+
+#, fuzzy
+msgid "pretix"
+msgstr "__pretix"
+
+#, fuzzy
+msgid "No pretix settings found for domain %domain."
+msgstr "__No pretix settings found for domain %domain."
+
+#, fuzzy
+msgid "Edit pretix settings"
+msgstr "__Edit pretix settings"
+
+#, fuzzy
+msgid ""
+"When set, a corresponding event is created and updated in <a "
+"href=\":organizer_url\">pretix</a>."
+msgstr ""
+"__When set, a corresponding event is created and updated in <a "
+"href=\":organizer_url\">pretix</a>."
+
+#, fuzzy
+msgid ""
+"Event has active orders. For accounting reasons the PSP element can no "
+"longer be changed."
+msgstr ""
+"__Event has active orders. For accounting reasons the PSP element can "
+"no longer be changed."
+
+#, fuzzy
+msgid "Select the PSP element the ticket sales should be registered under."
+msgstr "__Select the PSP element the ticket sales should be registered under."
+
+#, fuzzy
+msgid "Select PSP element"
+msgstr "__Select PSP element"
+
+#, fuzzy
+msgid "Error parsing pretix template events."
+msgstr "__Error parsing pretix template events."
+
+#, fuzzy
+msgid "Template event"
+msgstr "__Template event"
+
+#, fuzzy
+msgid "Select template event"
+msgstr "__Select template event"
+
+#, fuzzy
+msgid "Template event used to create event in pretix."
+msgstr "__Template event used to create event in pretix."
+
+#, fuzzy
+msgid "None"
+msgstr "__None"
+
+#, fuzzy
+msgid "pretix event"
+msgstr "__pretix event"
+
+#, fuzzy
+msgid "A link to the corresponding event in pretix."
+msgstr "__A link to the corresponding event in pretix."
+
+#, fuzzy
+msgid ""
+"Create a ticket category to set the event price in pretix. Only the "
+"price from the first category will be used."
+msgstr ""
+"__Create a ticket category to set the event price in pretix. Only the "
+"price from the first category will be used."
+
+#, fuzzy
+msgid "This field is managed by pretix for this event instance."
+msgstr "__This field is managed by pretix for this event instance."
+
+#, fuzzy
+msgid "pretix date (sub-event)"
+msgstr "__pretix date (sub-event)"
+
+#, fuzzy
+msgid "A link to the corresponding date (sub-event) in pretix."
+msgstr "__A link to the corresponding date (sub-event) in pretix."
+
+#, fuzzy
+msgid "@field is required."
+msgstr "__@field is required."
+
+#, fuzzy
+msgid "This event instance has an order in pretix."
+msgid_plural "This event instance has @count orders in pretix."
+msgstr[0] "__This event instance has an order in pretix."
+msgstr[1] "This event instance has @count orders in pretix."
+
+#, fuzzy
+msgid ""
+"Go to <a href=\":url\">:url</a> and cancel the order before deleting "
+"this event instance."
+msgid_plural ""
+"Go to <a href=\":url\">:url</a> and cancel all @count orders before "
+"deleting this event instance."
+msgstr[0] ""
+"__Go to <a href=\":url\">:url</a> and cancel the order before deleting "
+"this event instance."
+msgstr[1] ""
+"Go to <a href=\":url\">:url</a> and cancel all @count orders before "
+"deleting this event instance."
+
+#, fuzzy
+msgid "Error synchronizing @event: @message"
+msgstr "__Error synchronizing @event: @message"
+
+#, fuzzy
+msgid "Event <a href=\":event_url\">@event</a> created in pretix"
+msgstr "__Event <a href=\":event_url\">@event</a> created in pretix"
+
+#, fuzzy
+msgid "Event <a href=\":event_url\">@event</a> updated in pretix"
+msgstr "__Event <a href=\":event_url\">@event</a> updated in pretix"
+
+#, fuzzy
+msgid "Cannot get sub-events for template event @event"
+msgstr "__Cannot get sub-events for template event @event"
+
+#, fuzzy
+msgid "Template event @event has no sub-events"
+msgstr "__Template event @event has no sub-events"
+
+#, fuzzy
+msgid "Cannot get items for template event @event"
+msgstr "__Cannot get items for template event @event"
+
+#, fuzzy
+msgid "Template event @event has no items"
+msgstr "__Template event @event has no items"
+
+#, fuzzy
+msgid "Cannot create sub-event for event @event"
+msgstr "__Cannot create sub-event for event @event"
+
+#, fuzzy
+msgid "Cannot get quotas for sub-event @sub_event"
+msgstr "__Cannot get quotas for sub-event @sub_event"
+
+#, fuzzy
+msgid "Cannot get quotas for template sub-event @sub_event"
+msgstr "__Cannot get quotas for template sub-event @sub_event"
+
+#, fuzzy
+msgid "Template sub-event @sub_event has no quotas"
+msgstr "__Template sub-event @sub_event has no quotas"
+
+#, fuzzy
+msgid ""
+"Cannot create quota for sub-event @sub_event on event @event; product "
+"@product has no variations"
+msgstr ""
+"__Cannot create quota for sub-event @sub_event on event @event; "
+"product @product has no variations"
+
+#, fuzzy
+msgid "Cannot create quota for sub-event @sub_event on event @event"
+msgstr "__Cannot create quota for sub-event @sub_event on event @event"
+
+#, fuzzy
+msgid ""
+"Cannot get quota data for updating sub-event @sub_event on event "
+"@event"
+msgstr ""
+"__Cannot get quota data for updating sub-event @sub_event on event "
+"@event"
+
+#, fuzzy
+msgid "Cannot update sub-event @sub_event on event @event"
+msgstr "__Cannot update sub-event @sub_event on event @event"
+
+#, fuzzy
+msgid "Cannot update quota for sub-event"
+msgstr "__Cannot update quota for sub-event"
+
+#, fuzzy
+msgid "Error deleting @event in pretix: @message"
+msgstr "__Error deleting @event in pretix: @message"
+
+#, fuzzy
+msgid "Error deleting pretix sub-event @sub_event from event @event: @message"
+msgstr ""
+"__Error deleting pretix sub-event @sub_event from event @event: "
+"@message"
+
+#, fuzzy
+msgid ""
+"At least one event instance is required to set <a "
+"href=\":pretix_event_url\">@event</a> live in pretix"
+msgstr ""
+"__At least one event instance is required to set <a "
+"href=\":pretix_event_url\">@event</a> live in pretix"
+
+#, fuzzy
+msgid "Event <a href=\":event_url\">@event</a> set live in pretix"
+msgstr "__Event <a href=\":event_url\">@event</a> set live in pretix"
+
+#, fuzzy
+msgid "Event <a href=\":event_url\">@event</a> set not live in pretix"
+msgstr "__Event <a href=\":event_url\">@event</a> set not live in pretix"
+
+#, fuzzy
+msgid "Error setting @event live in pretix: @message"
+msgstr "__Error setting @event live in pretix: @message"
+
+#, fuzzy
+msgid "Error setting @event not live in pretix: @message"
+msgstr "__Error setting @event not live in pretix: @message"
+
+#, fuzzy
+msgid "ID"
+msgstr "__ID"
+
+#, fuzzy
+msgid "Title"
+msgstr "__Title"
+
+#, fuzzy
+msgid "Maintain copy"
+msgstr "__Maintain copy"
+
+#, fuzzy
+msgid "Event shop URL"
+msgstr "__Event shop URL"
+
+#, fuzzy
+msgid "Event admin URL"
+msgstr "__Event admin URL"
+
+#, fuzzy
+msgid "pretix ID"
+msgstr "__pretix ID"
+
+#, fuzzy
+msgid "Yes"
+msgstr "__Yes"
+
+#, fuzzy
+msgid "No"
+msgstr "__No"
+
+#, fuzzy
+msgid "Edit event instance"
+msgstr "__Edit event instance"
+
+#, fuzzy
+msgid "Edit event series"
+msgstr "__Edit event series"
+
+#, fuzzy
+msgid "Event has been deleted in pretix."
+msgstr "__Event has been deleted in pretix."
+

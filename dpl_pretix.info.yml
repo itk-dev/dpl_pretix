@@ -11,3 +11,6 @@ dependencies:
   - webform:webform
 
 configure: dpl_pretix.settings
+
+"interface translation project": dpl_pretix
+"interface translation server pattern": https://git.drupalcode.org/project/%project/-/raw/10.x/translations/%project.%language.po
