@@ -1,0 +1,9 @@
+services:
+  phpfpm:
+    # At the time of writing, dpl-cms requires PHP 8.3 (!) (cf.
+    # https://github.com/danskernesdigitalebibliotek/dpl-cms/blob/develop/composer.json#L102)
+    image: itkdev/php8.3-fpm:latest
+    profiles:
+      - dev
+    environment:
+      PHP_MEMORY_LIMIT: 512M

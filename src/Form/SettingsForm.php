@@ -17,6 +17,7 @@ use Drupal\dpl_pretix\PretixHelper;
 use Drupal\dpl_pretix\Settings;
 use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\dpl_pretix\Settings\PretixSettings;
+use Drupal\field\FieldConfigInterface;
 use Drupal\user\RoleInterface;
 use Drupal\user\RoleStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -477,9 +478,13 @@ YAML
     $section = self::SECTION_EVENT_FORM;
     $defaults = $this->settings->getEventForm();
 
+    $fieldRelevantTicketManagerLabel = EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER;
+
     $eventSeriesFields = $this->entityFieldManager->getFieldDefinitions('eventseries', 'default');
-    $fieldRelevantTicketManagerLabel = $eventSeriesFields[EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER]?->label()
-      ?? EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER;
+    $fieldRelevantTicketManager = $eventSeriesFields[EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER] ?? NULL;
+    if ($fieldRelevantTicketManager instanceof FieldConfigInterface) {
+      $fieldRelevantTicketManagerLabel = $fieldRelevantTicketManager->label();
+    }
 
     // @todo Get the label from the actual field group.
     $ticketsGroupLabel = $this->t('Tickets');

@@ -1,0 +1,64 @@
+services:
+  dpl-cms:
+    # image: itkdev/php8.3-fpm:latest
+    build:
+      # context: .
+      dockerfile_inline: |
+        # syntax=docker/dockerfile:1
+        # check=skip=SecretsUsedInArgOrEnv
+
+        FROM itkdev/php8.3-fpm:latest
+        ENV PHP_MEMORY_LIMIT=512M
+
+        # https://stackoverflow.com/a/33439625
+        SHELL ["/bin/bash", "-c"]
+
+        WORKDIR /app
+
+        RUN curl --location https://github.com/danskernesdigitalebibliotek/dpl-cms/archive/refs/heads/main.tar.gz --output main.tar.gz \
+          && tar xvf main.tar.gz --strip-components=1 \
+          && rm main.tar.gz \
+          && composer install
+
+        # Add the sqlite module to the existing config
+        RUN sed --in-place '/dpl_event: 0/a \ \ sqlite: 0' config/sync/core.extension.yml \
+          && cat <<'EOF' > web/sites/default/settings.local.php
+        <?php
+
+        $$databases['default']['default'] = [
+          'driver' => 'sqlite',
+          'database' => 'sites/default/files/.ht.sqlite',
+        ];
+        EOF
+
+        ENV BNF_GRAPHQL_CONSUMER_SECRET=this_is_not_a_real_secret
+        ENV GO_GRAPHQL_CONSUMER_SECRET=this_is_not_a_real_secret
+        ENV BNF_GRAPHQL_CONSUMER_USER_PASSWORD==this_is_not_a_real_password
+        ENV NEXT_PUBLIC_GO_GRAPHQL_CONSUMER_USER_PASSWORD=this_is_not_a_real_password
+
+        ENV GO_DOMAIN=dpl_pretix.example.com
+        ENV LAGOON_ROUTE=https://dpl_pretix.example.com
+
+        RUN vendor/bin/drush site:install --existing-config --yes --account-mail itkdev+dpl_pretix@mkb.aarhus.dk --site-mail itkdev+dpl_pretix@mkb.aarhus.dk
+
+    # profiles:
+    #   - dev
+    user: root
+    volumes:
+      # - ./settings.local.php:/app/web/sites/default/settings.local.php
+      # Mount our code into the web/modules/contrib folder
+      - ../:/app/web/sites/default/files/modules_local/dpl_pretix
+    environment:
+      # Let the module path, i.e. the mounted path, be known in the container
+      MODULE_PATH: web/sites/default/files/modules_local/dpl_pretix
+
+      PHP_MAX_EXECUTION_TIME: 60
+      PHP_MEMORY_LIMIT: 512M
+
+      BNF_GRAPHQL_CONSUMER_SECRET: this_is_not_a_real_secret
+      GO_GRAPHQL_CONSUMER_SECRET: this_is_not_a_real_secret
+      BNF_GRAPHQL_CONSUMER_USER_PASSWORD: =this_is_not_a_real_password
+      NEXT_PUBLIC_GO_GRAPHQL_CONSUMER_USER_PASSWORD: this_is_not_a_real_password
+
+      GO_DOMAIN: dpl_pretix.example.com
+      LAGOON_ROUTE: https://dpl_pretix.example.com

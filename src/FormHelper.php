@@ -118,7 +118,7 @@ class FormHelper {
   /**
    * Hide the Dates group depending on event series state.
    */
-  private function hideDatesGroup(array &$form, FormStateInterface $formState) {
+  private function hideDatesGroup(array &$form, FormStateInterface $formState): void {
     if ($event = $this->getEventSeriesEntity($formState)) {
       $maintainCopy = (bool) $this->eventDataHelper->getEventData($event)?->maintainCopy;
       if ($event->isNew() || !$maintainCopy) {
@@ -140,7 +140,7 @@ class FormHelper {
       // instance on the event series form (cf.
       // https://github.com/danskernesdigitalebibliotek/dpl-cms/blob/develop/web/modules/custom/dpl_event/src/Plugin/EventInstanceCreator/DplEventInstanceCreator.php#L31-L34).
       $datesGroupKey = 'group_dates';
-      if ((int) $event?->getInstanceCount() > 1
+      if ($event->getInstanceCount() > 1
         && isset($form['#fieldgroups'][$datesGroupKey]) && isset($form[$datesGroupKey])) {
         $weight = $form['#fieldgroups'][$datesGroupKey]->weight;
         // unset($form['#fieldgroups'][$datesGroupKey]);

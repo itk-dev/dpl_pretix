@@ -1,4 +1,6 @@
-FROM itkdev/php8.1-fpm:latest
+# At the time of writing, dpl-cms requires PHP 8.3 (!) (cf.
+# https://github.com/danskernesdigitalebibliotek/dpl-cms/blob/develop/composer.json#L102)
+FROM itkdev/php8.3-fpm:latest
 
 USER root
 
