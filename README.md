@@ -115,3 +115,11 @@ docker compose build && docker compose run --rm php scripts/create-release dev-t
 
 [DPL CMS]: https://github.com/danskernesdigitalebibliotek/dpl-cms/
 [pretix]: https://pretix.eu/
+
+## New in 10.1
+
+* On an event series with multiple event instances, the user is forced to edit instances on the “Edit instances“ page
+  * The “Dates“ group is replaced with a reference to the Edit instances page
+* An event instance with pretix orders cannot be deleted
+* The “Relevant for ticket manager” field can be disabled
+* User roles can be denied access to “Delete event instance“

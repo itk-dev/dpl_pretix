@@ -2,6 +2,7 @@
 
 namespace Drupal\dpl_pretix;
 
+use Doctrine\Common\Collections\Collection;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\EntityForm;
@@ -14,10 +15,13 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\dpl_pretix\Entity\EventData;
+use Drupal\dpl_pretix\Pretix\ApiClient\Entity\Order;
 use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\recurring_events\Entity\EventInstance;
 use Drupal\recurring_events\Entity\EventSeries;
+use Drupal\recurring_events\Form\EventInstanceDeleteForm;
 use Drupal\webform\Utility\WebformArrayHelper;
 
 /**
@@ -92,6 +96,11 @@ class FormHelper {
     if (!($formObject instanceof ContentEntityFormInterface)) {
       return;
     }
+
+    if ($formObject instanceof EventInstanceDeleteForm) {
+      $this->checkPretixOrders($form, $formState);
+    }
+
     $operation = $formObject->getOperation();
     if (!in_array($operation, ['add', 'edit'], TRUE)) {
       return;
@@ -495,6 +504,67 @@ class FormHelper {
         $element['#weight'] = $form['#fieldgroups'][$followingSibling]->weight;
       }
     }
+  }
+
+  /**
+   * Check for pretix orders for event instance.
+   */
+  private function checkPretixOrders(
+    array &$form,
+    FormStateInterface $formState,
+  ): void {
+    $instance = $this->getEventInstanceEntity($formState);
+    if (NULL === $instance) {
+      return;
+    }
+    $instanceData = $this->eventDataHelper->getEventData($instance);
+    if (NULL === $instanceData?->pretixEvent) {
+      return;
+    }
+
+    $orders = $this->getInstanceOrders($instanceData);
+    if (!$orders->isEmpty()) {
+      $messages = [
+        $this->formatPlural(
+          $orders->count(),
+          'This event instance has an order in pretix.',
+          'This event instance has @count orders in pretix.'
+        ),
+      ];
+      if ($ordersUrl = $instanceData->getEventOrdersAdminUrl()) {
+        $messages[] = $this->formatPlural(
+          $orders->count(),
+          'Go to <a href=":url">:url</a> and cancel the order before deleting this event instance.',
+          'Go to <a href=":url">:url</a> and cancel all @count orders before deleting this event instance.',
+          [':url' => $ordersUrl]
+        );
+      }
+
+      $form['dpl_pretix_messages'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          MessengerInterface::TYPE_WARNING => $messages,
+        ],
+      ];
+
+      $form['actions']['submit']['#access'] = FALSE;
+    }
+  }
+
+  /**
+   * Get all orders for an event instance.
+   *
+   * @return \Doctrine\Common\Collections\Collection<int, Order>
+   *   The orders if any.
+   */
+  private function getInstanceOrders(EventData $instanceData): Collection {
+    $orders = $this->pretixHelper->client()->getOrders((string) $instanceData->pretixEvent, [
+      'subevent' => $instanceData->pretixSubeventId,
+    ]);
+
+    // Filter out orders with no positions.
+    // @todo Client::getOrders returning orders with no positions looks like a bug.
+    return $orders->filter(static fn (Order $order) => !$order->getPositions()->isEmpty());
   }
 
 }
