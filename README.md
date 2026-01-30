@@ -121,7 +121,7 @@ After [installing the module](https://github.com/itk-dev/drupal_translation_extr
 in Drupal, run
 
 ``` shell
-drush drupal_translation_extractor:translation:extract da --dump-messages --force module:dpl_pretix --output=%source/translation/%module.%locale.po
+drush drupal_translation_extractor:translation:extract da --dump-messages --force module:dpl_pretix --output=%source/translations/%module.%locale.po
 ```
 
 to extract translations for the `dpl_pretix` module. Remove `dpl_pretix`'s `vendor` folder before extracting
