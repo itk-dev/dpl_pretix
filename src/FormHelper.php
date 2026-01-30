@@ -211,7 +211,7 @@ class FormHelper {
 
     $form[self::FORM_KEY] = [
       '#type' => 'details',
-      '#title' => $this->t('pretix'),
+      '#title' => 'pretix',
       '#tree' => TRUE,
       '#open' => TRUE,
     ];
@@ -407,7 +407,7 @@ class FormHelper {
 
       $form[self::FORM_KEY] = [
         '#type' => 'details',
-        '#title' => $this->t('pretix'),
+        '#title' => 'pretix',
         '#tree' => TRUE,
         '#open' => TRUE,
       ];

@@ -113,8 +113,19 @@ task dev:code-analysis
 docker compose build && docker compose run --rm php scripts/create-release dev-test
 ```
 
-[DPL CMS]: https://github.com/danskernesdigitalebibliotek/dpl-cms/
-[pretix]: https://pretix.eu/
+## Translations
+
+Use [Translation extractor](https://github.com/itk-dev/drupal_translation_extractor) to extract translations.
+
+After [installing the module](https://github.com/itk-dev/drupal_translation_extractor?tab=readme-ov-file#installation)
+in Drupal, run
+
+``` shell
+drush drupal_translation_extractor:translation:extract da --dump-messages --force module:dpl_pretix --output=%source/translation/%module.%locale.po
+```
+
+to extract translations for the `dpl_pretix` module. Remove `dpl_pretix`'s `vendor` folder before extracting
+translations.
 
 ## New in 10.1
 
@@ -123,3 +134,6 @@ docker compose build && docker compose run --rm php scripts/create-release dev-t
 * An event instance with pretix orders cannot be deleted
 * The “Relevant for ticket manager” field can be disabled
 * User roles can be denied access to “Delete event instance“
+
+[DPL CMS]: https://github.com/danskernesdigitalebibliotek/dpl-cms/
+[pretix]: https://pretix.eu/
