@@ -134,6 +134,21 @@ class FormHelper {
         return;
       }
 
+      $form['custom_date']['stuff'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          MessengerInterface::TYPE_STATUS => [
+            $this->t('Use <a href=":add_instance_url">@add_instance</a> to add another date.', [
+              ':add_instance_url' => Url::fromRoute('entity.eventseries.add_instance_form',
+                [
+                  'eventseries' => $event->id(),
+                ])->toString(TRUE)->getGeneratedUrl(),
+              '@add_instance' => $this->t('Add instance'),
+            ]),
+          ],
+        ],
+      ];
+
       // Make sure that user cannot “Add more" instances.
       $form['custom_date']['widget'][1]['#access'] = FALSE;
       $form['custom_date']['widget']['add_more']['#access'] = FALSE;
@@ -169,11 +184,11 @@ class FormHelper {
             MessengerInterface::TYPE_STATUS => [
               $this->t('This event series uses pretix and has multiple event instances. The instances must be edited on <a href=":edit_instances_url">the @edit_instances page</a>.',
                 [
-                  '@edit_instances' => $this->t('Edit instances'),
                   ':edit_instances_url' => Url::fromRoute('view.event_instance_list.page_1',
                     [
                       'eventseries' => $event->id(),
                     ])->toString(TRUE)->getGeneratedUrl(),
+                  '@edit_instances' => $this->t('Edit instances'),
                 ]),
             ],
           ],
