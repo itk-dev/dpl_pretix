@@ -1,0 +1,39 @@
+name: Create release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build and create release
+        env:
+          # https://stackoverflow.com/a/71158878/2502647
+          GH_TOKEN: ${{ github.TOKEN }}
+        run: |
+          # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/contexts#github-context
+          tag_name="${{ github.ref_name }}"
+
+          is_prerelease=false
+          if [[ "${tag_name}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z][A-Za-z0-9]+)$ ]]; then
+            is_prerelease=true
+          fi
+
+          release_name="${tag_name}"
+          scripts/build-release "$release_name"
+
+          # Delete release if it already exists.
+          gh release view "$release_name" > /dev/null 2>&1 && gh release delete "$release_name" --yes
+          if [ "$is_prerelease" = true ]; then
+            gh release create "$release_name" --prerelease --generate-notes *.tar.gz checksum.txt
+          else
+            gh release create "$release_name" --generate-notes *.tar.gz checksum.txt
+          fi

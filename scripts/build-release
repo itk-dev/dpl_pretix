@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -o errexit -o errtrace -o noclobber -o nounset -o pipefail
+IFS=$'\n\t'
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+script_name=$(basename "${BASH_SOURCE[0]}")
+project_dir=$(cd "$(dirname "$script_dir")" && pwd)
+
+version="${1:-}"
+
+if [ -z "${version}" ]; then
+    (>&2 echo "Usage: $script_name version")
+    exit 1
+fi
+
+if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z][A-Za-z0-9]+)?$ ]]; then
+    (>&2 echo "Invalid version: ${version}")
+    exit 1
+fi
+
+project=dpl_pretix
+
+cd "$project_dir"
+
+release_dir="release/${project}"
+release_name="$project-$version.tar.gz"
+
+rm -fr "${release_dir}"
+mkdir -p "${release_dir}"
+
+git clone . "${release_dir}"
+rm -fr "${release_dir}/.git"
+
+tar --directory "$(dirname "${release_dir}")" -cvf "${release_name}" "$(basename "${project}")"
+sha256sum "${release_name}" >| checksum.txt
+
+ls "${release_name}" checksum.txt
+
+rm -fr "$(dirname "${release_dir}")"
