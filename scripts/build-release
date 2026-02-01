@@ -31,6 +31,13 @@ mkdir -p "${release_dir}"
 git clone . "${release_dir}"
 rm -fr "${release_dir}/.git"
 
+cat >> "${release_dir}/${project}.info.yml" <<EOF
+
+version: "${version}"
+project: "${project}"
+datestamp: $(date +%s)
+EOF
+
 tar --directory "$(dirname "${release_dir}")" -cvf "${release_name}" "$(basename "${project}")"
 sha256sum "${release_name}" >| checksum.txt
 
