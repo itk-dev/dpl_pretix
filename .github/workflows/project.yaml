@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: |
-          docker run --rm --volume "$PWD:/mnt" koalaman/shellcheck:stable scripts/code-analysis
+          docker run --rm --volume "$PWD:/mnt" koalaman/shellcheck:stable scripts/code-analysis scripts/build-release
 
   code-analysis-phpstan:
     name: code-analysis/phpstan

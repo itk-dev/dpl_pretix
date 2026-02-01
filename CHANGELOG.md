@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-25](https://github.com/rimi-itk/dpl_pretix/pull/25)
+  * Set up creating releases on GitHub
 * [PR-22](https://github.com/rimi-itk/dpl_pretix/pull/22)
   * Added and improved event form settings
   * Made if possible to disallow deleting event instances
