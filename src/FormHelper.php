@@ -22,7 +22,6 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\recurring_events\Entity\EventInstance;
 use Drupal\recurring_events\Entity\EventSeries;
 use Drupal\recurring_events\Form\EventInstanceDeleteForm;
-use Drupal\webform\Utility\WebformArrayHelper;
 
 /**
  * Form helper.
@@ -121,6 +120,35 @@ class FormHelper {
     if (isset($form[self::FORM_KEY])) {
       $this->placeElementOnForm($form[self::FORM_KEY], $form);
       $this->hideDatesGroup($form, $formState);
+
+      if (isset($element[self::FIELD_TICKET_CATEGORIES])) {
+        $anchor = $element[self::FIELD_TICKET_CATEGORIES];
+
+        $messageElement = [
+          // Wrap message in container to make states work.
+          '#type' => 'container',
+          '#group' => $anchor['#group'],
+
+          'message' => [
+            '#theme' => 'status_messages',
+            '#message_list' => [
+              'warning' => [
+                $this->t('Create a ticket category to set the event price in pretix. Only the price from the first category will be used.'),
+              ],
+            ],
+          ],
+          '#states' => [
+            'visible' => [
+              ':input[name="dpl_pretix[maintain_copy]"]' => ['checked' => TRUE],
+            ],
+          ],
+        ];
+        if (isset($anchor['#weight'])) {
+          // Show the message before the anchor element.
+          $messageElement['#weight'] = $anchor['#weight'] - 1;
+        }
+        $element[self::FIELD_TICKET_CATEGORIES . '_message'] = $messageElement;
+      }
     }
   }
 
@@ -362,28 +390,6 @@ class FormHelper {
     $form['#validate'][] = [$this, 'validateEventForm'];
 
     if (isset($form[self::FIELD_TICKET_CATEGORIES])) {
-      $element = [
-        // Wrap message in container to make states work.
-        '#type' => 'container',
-
-        'message' => [
-          '#theme' => 'status_messages',
-          '#message_list' => [
-            'warning' => [
-              $this->t('Create a ticket category to set the event price in pretix. Only the price from the first category will be used.'),
-            ],
-          ],
-        ],
-        '#states' => [
-          'visible' => [
-            ':input[name="dpl_pretix[maintain_copy]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-      if (isset($form[self::FIELD_TICKET_CATEGORIES]['#weight'])) {
-        $element['#weight'] = $form[self::FIELD_TICKET_CATEGORIES]['#weight'];
-      }
-      WebformArrayHelper::insertBefore($form, self::FIELD_TICKET_CATEGORIES, self::FIELD_TICKET_CATEGORIES . '_message', $element);
       // Require (at least) one ticket category.
       $form[self::FIELD_TICKET_CATEGORIES]['widget']['#required'] = TRUE;
     }
