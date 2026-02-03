@@ -7,6 +7,7 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\dpl_pretix\Form\SettingsForm;
 use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\dpl_pretix\Settings\EventNodeSettings;
+use Drupal\dpl_pretix\Settings\ModuleSettings;
 use Drupal\dpl_pretix\Settings\PretixSettings;
 use Drupal\dpl_pretix\Settings\PspElementSettings;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -100,6 +101,13 @@ class Settings {
    */
   public function getEventForm(): EventFormSettings {
     return new EventFormSettings($this->getValue(SettingsForm::SECTION_EVENT_FORM));
+  }
+
+  /**
+   * Get module settings.
+   */
+  public function getModule(): ModuleSettings {
+    return new ModuleSettings($this->getValue(SettingsForm::SECTION_MODULE));
   }
 
   /**

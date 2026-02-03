@@ -39,6 +39,7 @@ final class SettingsForm extends ConfigFormBase {
   public const string SECTION_PSP_ELEMENTS = 'psp_elements';
   public const string SECTION_EVENT_NODES = 'event_nodes';
   public const string SECTION_EVENT_FORM = 'event_form';
+  public const string SECTION_MODULE = 'module';
 
   private const string ELEMENT_TEMPLATE_EVENTS = 'template_events';
   private const string ELEMENT_PRETIX_URL = 'url';
@@ -136,6 +137,7 @@ final class SettingsForm extends ConfigFormBase {
     $this->buildFormPspElements($form, $form_state);
     $this->buildFormEventNodes($form);
     $this->buildFormEventForm($form);
+    $this->buildModuleForm($form);
 
     $form['admin'] = [
       '#type' => 'container',
@@ -524,6 +526,30 @@ YAML
   }
 
   /**
+   * Build form.
+   */
+  private function buildModuleForm(array &$form): void {
+    $section = self::SECTION_MODULE;
+    $defaults = $this->settings->getModule();
+
+    // @todo Get the label from the actual field group.
+    $ticketsGroupLabel = $this->t('Tickets');
+
+    $form[$section] = [
+      '#type' => 'details',
+      '#title' => $this->t('Module'),
+      '#open' => TRUE,
+
+      'release_url_template' => [
+        '#type' => 'textfield',
+        '#title' => $this->t('Release URL template'),
+        '#default_value' => $defaults->releaseUrlTemplate,
+        '#description' => $this->t('If set, a link to the current release will be added in the admin toolbar, e.g. <code>https://www.drupal.org/project/%project/releases/%version</code>. Note: The cache must be cleared to update the admin toolbar.'),
+      ],
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state): void {
@@ -600,6 +626,7 @@ YAML
       self::SECTION_PSP_ELEMENTS,
       self::SECTION_EVENT_NODES,
       self::SECTION_EVENT_FORM,
+      self::SECTION_MODULE,
     ] as $section) {
       $values = $form_state->getValue($section);
       if (is_array($values)) {

@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2026-01-30 09:39+0100\n"
-"PO-Revision-Date: 2026-01-30 09:39+0100\n"
+"POT-Creation-Date: 2026-02-03 16:06+0100\n"
+"PO-Revision-Date: 2026-02-03 16:06+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -233,6 +233,18 @@ msgstr "Id"
 msgid "If checked, the %field field will be disabled on the event form"
 msgstr "Markér her hvis %field-feltet skal være deaktiveret"
 
+#, fuzzy
+msgid ""
+"If set, a link to the current release will be added in the admin "
+"toolbar, e.g. "
+"<code>https://www.drupal.org/project/%project/releases/%version</code>. "
+"Note: The cache must be cleared to update the admin toolbar."
+msgstr ""
+"__If set, a link to the current release will be added in the admin "
+"toolbar, e.g. "
+"<code>https://www.drupal.org/project/%project/releases/%version</code>. "
+"Note: The cache must be cleared to update the admin toolbar."
+
 msgid "Invalid template events in @domain (@message)."
 msgstr "Ugyldigt skabelonarrangement i @domain (@message)."
 
@@ -241,6 +253,10 @@ msgstr "Placering af pretix-afsnit"
 
 msgid "Maintain copy"
 msgstr "Vedligehold kopi"
+
+#, fuzzy
+msgid "Module"
+msgstr "__Module"
 
 msgid ""
 "More settings will become available when pretix settings are saved and "
@@ -296,6 +312,10 @@ msgstr "Forbindelse til api oprettet."
 
 msgid "Pinging API failed: @message"
 msgstr "Fejl under forbindelse til api: @message"
+
+#, fuzzy
+msgid "Release URL template"
+msgstr "__Release URL template"
 
 msgid "Remove PSP element"
 msgstr "Fjern psp-element"
@@ -475,4 +495,9 @@ msgstr "pretix-arrangementstandarder"
 
 msgid "pretix webhook URL"
 msgstr "pretix-webhook-url"
+
+#, fuzzy
+msgctxt "dpl_pretix"
+msgid "@name version: @version"
+msgstr "__@name version: @version"
 
