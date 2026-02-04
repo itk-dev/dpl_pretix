@@ -7,6 +7,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Extension\InfoParser;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -50,6 +52,7 @@ final class SettingsForm extends ConfigFormBase {
     private readonly LanguageManagerInterface $languageManager,
     private readonly EntityFieldManagerInterface $entityFieldManager,
     private readonly RoleStorageInterface $roleStorage,
+    private readonly ModuleHandlerInterface $moduleHandler,
     private readonly Settings $settings,
     private readonly PretixHelper $pretixHelper,
   ) {
@@ -71,6 +74,7 @@ final class SettingsForm extends ConfigFormBase {
       $container->get('language_manager'),
       $container->get('entity_field.manager'),
       $container->get('entity_type.manager')->getStorage('user_role'),
+      $container->get('module_handler'),
       $settings,
       $pretixHelper,
     );
@@ -136,6 +140,28 @@ final class SettingsForm extends ConfigFormBase {
     $this->buildFormPspElements($form, $form_state);
     $this->buildFormEventNodes($form);
     $this->buildFormEventForm($form);
+
+    $form['module_info'] = [
+      '#type' => 'container',
+    ];
+
+    try {
+      $project = 'dpl_pretix';
+      $module = $this->moduleHandler->getModule($project);
+      $info = (new InfoParser())->parse($module->getFileInfo()
+        ->getPathname());
+
+      $info['project'] = $project;
+      $form['module_info']['version'] = [
+        '#markup' => $this->t('@name version: @version',
+          ['@name' => $info['name'], '@version' => $info['version'] ?? '👻'],
+          ['context' => 'dpl_pretix']
+        ),
+      ];
+    }
+    catch (\Exception) {
+      // Silently ignore any errors.
+    }
 
     $form['admin'] = [
       '#type' => 'container',
