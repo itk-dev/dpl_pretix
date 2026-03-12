@@ -13,4 +13,4 @@ dependencies:
 configure: dpl_pretix.settings
 
 "interface translation project": dpl_pretix
-"interface translation server pattern": https://raw.githubusercontent.com/rimi-itk/%project/refs/tags/%version/translations/%project.%language.po
+"interface translation server pattern": https://raw.githubusercontent.com/itk-dev/%project/refs/tags/%version/translations/%project.%language.po
