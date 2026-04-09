@@ -1,0 +1,54 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+
+name: Project
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    name: Documentation should be updated
+    if: github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Git fetch
+        run: git fetch
+
+      - name: Check that documentation (Markdown files) has been updated.
+        run: git diff --exit-code origin/${{ github.base_ref }} -- git ls-files '*.md' ':!:CHANGELOG.md' ':!:.github/' && exit 1 || exit 0
+
+  coding-standards-shellcheck:
+    name: coding-standards-check/shellcheck
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          docker run --rm --volume "$PWD:/mnt" koalaman/shellcheck:stable scripts/code-analysis scripts/build-release
+
+  code-analysis-phpstan:
+    name: code-analysis/phpstan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      # https://getcomposer.org/doc/03-cli.md#composer-auth
+      COMPOSER_AUTH: |
+        {
+          "github-oauth": {
+            "github.com": "${{ github.TOKEN }}"
+          }
+        }
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          ./scripts/code-analysis

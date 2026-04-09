@@ -9,8 +9,11 @@ parameters:
       - vendor
   ignoreErrors:
     - '#(Function|Method) (Drupal\\dpl_pretix\\|dpl_pretix_).+ return type has no value type specified in iterable type array.#'
-    - '#(Function|Method) (Drupal\\dpl_pretix\\|dpl_pretix_).+ has parameter \$(element|form|options) with no value type specified in iterable type array.#'
+    - '#(Function|Method) (Drupal\\dpl_pretix\\|dpl_pretix_).+ has parameter \$(element|form|complete_form|events_to_create|options) with no value type specified in iterable type array.#'
 
+  # https://github.com/drush-ops/drush/issues/6334
+  scanDirectories:
+    - ../../../../../../vendor/drush/drush/src-symfony-compatibility
 
 # Local Variables:
 # mode: yaml

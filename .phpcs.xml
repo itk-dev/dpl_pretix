@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<ruleset name="PHP_CodeSniffer">
+  <description>The coding standard.</description>
+
+  <file>.</file>
+  <exclude-pattern>css/</exclude-pattern>
+  <exclude-pattern>vendor/</exclude-pattern>
+  <exclude-pattern>vendor_release/</exclude-pattern>
+  <exclude-pattern>src/Pretix/ApiClient/</exclude-pattern>
+
+  <!-- Show progress -->
+  <arg value="p"/>
+
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,yml"/>
+
+  <config name="drupal_core_version" value="10"/>
+
+  <rule ref="Drupal">
+    <!-- <exclude name="Drupal.Files.TxtFileLineLength.TooLong"/> -->
+    <!-- We want to be able to use "package" and "version" in our custom modules -->
+    <exclude name="Drupal.InfoFiles.AutoAddedKeys.Project"/>
+    <exclude name="Drupal.InfoFiles.AutoAddedKeys.Version"/>
+    <exclude name="Drupal.NamingConventions.ValidEnumCase.NoUpperAcronyms" />
+    <exclude name="Drupal.NamingConventions.ValidEnumCase.NoUnderscores" />
+  </rule>
+   <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
+</ruleset>

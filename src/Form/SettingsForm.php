@@ -6,6 +6,9 @@ use Drupal\Core\Config\Config;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Extension\InfoParser;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -14,7 +17,11 @@ use Drupal\Core\Url;
 use Drupal\dpl_pretix\Exception\ValidationException;
 use Drupal\dpl_pretix\PretixHelper;
 use Drupal\dpl_pretix\Settings;
+use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\dpl_pretix\Settings\PretixSettings;
+use Drupal\field\FieldConfigInterface;
+use Drupal\user\RoleInterface;
+use Drupal\user\RoleStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use function Safe\preg_match;
@@ -26,23 +33,26 @@ final class SettingsForm extends ConfigFormBase {
   use StringTranslationTrait;
   use DependencySerializationTrait;
 
-  public const CONFIG_NAME = 'dpl_pretix.settings';
+  public const string CONFIG_NAME = 'dpl_pretix.settings';
 
-  public const SECTION_PRETIX = 'pretix';
-  public const PRETIX_SUB_SECTIONS = ['prod', 'test'];
+  public const string SECTION_PRETIX = 'pretix';
+  public const array PRETIX_SUB_SECTIONS = ['prod', 'test'];
 
-  public const SECTION_PSP_ELEMENTS = 'psp_elements';
-  public const SECTION_EVENT_NODES = 'event_nodes';
-  public const SECTION_EVENT_FORM = 'event_form';
+  public const string SECTION_PSP_ELEMENTS = 'psp_elements';
+  public const string SECTION_EVENT_NODES = 'event_nodes';
+  public const string SECTION_EVENT_FORM = 'event_form';
 
-  private const ELEMENT_TEMPLATE_EVENTS = 'template_events';
-  private const ELEMENT_PRETIX_URL = 'url';
+  private const string ELEMENT_TEMPLATE_EVENTS = 'template_events';
+  private const string ELEMENT_PRETIX_URL = 'url';
 
-  private const ACTION_PING_API = 'action_ping_api';
+  private const string ACTION_PING_API = 'action_ping_api';
 
   public function __construct(
     ConfigFactoryInterface $configFactory,
     private readonly LanguageManagerInterface $languageManager,
+    private readonly EntityFieldManagerInterface $entityFieldManager,
+    private readonly RoleStorageInterface $roleStorage,
+    private readonly ModuleHandlerInterface $moduleHandler,
     private readonly Settings $settings,
     private readonly PretixHelper $pretixHelper,
   ) {
@@ -62,6 +72,9 @@ final class SettingsForm extends ConfigFormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('language_manager'),
+      $container->get('entity_field.manager'),
+      $container->get('entity_type.manager')->getStorage('user_role'),
+      $container->get('module_handler'),
       $settings,
       $pretixHelper,
     );
@@ -127,6 +140,28 @@ final class SettingsForm extends ConfigFormBase {
     $this->buildFormPspElements($form, $form_state);
     $this->buildFormEventNodes($form);
     $this->buildFormEventForm($form);
+
+    $form['module_info'] = [
+      '#type' => 'container',
+    ];
+
+    try {
+      $project = 'dpl_pretix';
+      $module = $this->moduleHandler->getModule($project);
+      $info = (new InfoParser())->parse($module->getFileInfo()
+        ->getPathname());
+
+      $info['project'] = $project;
+      $form['module_info']['version'] = [
+        '#markup' => $this->t('@name version: @version',
+          ['@name' => $info['name'], '@version' => $info['version'] ?? '👻'],
+          ['context' => 'dpl_pretix']
+        ),
+      ];
+    }
+    catch (\Exception) {
+      // Silently ignore any errors.
+    }
 
     $form['admin'] = [
       '#type' => 'container',
@@ -223,7 +258,7 @@ final class SettingsForm extends ConfigFormBase {
           '#title' => $this->t('Event slug template'),
           '#default_value' => $defaults->eventSlugTemplate,
           '#required' => TRUE,
-          '#description' => $this->t('Template used to generate event short forms in pretix. Placeholders<br/><code>{id}</code>: the event (node) id<br/><code>{random}</code>: a random string'),
+          '#description' => $this->t('Template used to generate event short forms in pretix. Placeholders<br /><code>{id}</code>: the event (node) id<br /><code>{random}</code>: a random string'),
         ],
 
         'default_language_code' => [
@@ -469,20 +504,47 @@ YAML
     $section = self::SECTION_EVENT_FORM;
     $defaults = $this->settings->getEventForm();
 
+    $fieldRelevantTicketManagerLabel = EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER;
+
+    $eventSeriesFields = $this->entityFieldManager->getFieldDefinitions('eventseries', 'default');
+    $fieldRelevantTicketManager = $eventSeriesFields[EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER] ?? NULL;
+    if ($fieldRelevantTicketManager instanceof FieldConfigInterface) {
+      $fieldRelevantTicketManagerLabel = $fieldRelevantTicketManager->label();
+    }
+
+    // @todo Get the label from the actual field group.
+    $ticketsGroupLabel = $this->t('Tickets');
+
     $form[$section] = [
       '#type' => 'details',
       '#title' => $this->t('Event form'),
       '#open' => TRUE,
 
-      'weight' => [
+      'location' => [
         '#type' => 'select',
         '#options' => [
-          -9999 => $this->t('Top'),
-          9999 => $this->t('Bottom'),
+          EventFormSettings::LOCATION_TOP => $this->t('Top'),
+          EventFormSettings::LOCATION_BEFORE_PREFIX . 'group_tickets' => $this->t('Before %group', ['%group' => $ticketsGroupLabel]),
+          EventFormSettings::LOCATION_BOTTOM => $this->t('Bottom'),
         ],
         '#title' => $this->t('Location of pretix section'),
-        '#default_value' => $defaults->weight ?? 9999,
+        '#default_value' => $defaults->location ?? EventFormSettings::LOCATION_TOP,
         '#description' => $this->t('The location of the pretix section on event form.'),
+      ],
+
+      'disable_field_relevant_ticket_manager' => [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Disable %field field', ['%field' => $fieldRelevantTicketManagerLabel]),
+        '#default_value' => $defaults->disableFieldRelevantTicketManager,
+        '#description' => $this->t('If checked, the %field field will be disabled on the event form', ['%field' => $fieldRelevantTicketManagerLabel]),
+      ],
+
+      'roles_that_can_delete_event_instances' => [
+        '#type' => 'checkboxes',
+        '#options' => array_map(static fn (RoleInterface $role) => $role->label(), $this->roleStorage->loadMultiple()),
+        '#title' => $this->t('Roles that can delete event instances'),
+        '#default_value' => $defaults->rolesThatCanDeleteEventInstances,
+        '#description' => $this->t('Select all roles that should be allowed to delete event instances.'),
       ],
     ];
   }

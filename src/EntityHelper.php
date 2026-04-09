@@ -3,12 +3,15 @@
 namespace Drupal\dpl_pretix;
 
 use Drupal\Component\Utility\Random;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\dpl_pretix\Entity\EventData;
 use Drupal\dpl_pretix\Exception\SynchronizeException;
@@ -38,9 +41,6 @@ final class EntityHelper {
    * @var \Drupal\Component\Utility\Random
    */
   private Random $random;
-
-  // @see /admin/structure/events/instance/types/eventinstance_type/default/edit/fields
-  private const EVENT_TICKET_LINK_FIELD = 'field_event_link';
 
   private const ITEM_PRICE_OVERRIDES = 'item_price_overrides';
   private const VARIATION_PRICE_OVERRIDES = 'variation_price_overrides';
@@ -1097,9 +1097,9 @@ final class EntityHelper {
    */
   private function setTicketUrl(EventSeries|EventInstance $event, EventData $data): void {
     $url = $data->getEventShopUrl();
-    if ($url && $url !== $event->get(self::EVENT_TICKET_LINK_FIELD)
+    if ($url && $url !== $event->get(FormHelper::FIELD_TICKET_URL)
       ->getString()) {
-      $event->set(self::EVENT_TICKET_LINK_FIELD, $url);
+      $event->set(FormHelper::FIELD_TICKET_URL, $url);
       $event->save();
     }
   }
@@ -1156,6 +1156,23 @@ final class EntityHelper {
     $this->setEventHasPendingInstances($event);
 
     return $events_to_create;
+  }
+
+  /**
+   * Implements hook_entity_access().
+   */
+  public function access(
+    EntityInterface $entity,
+    string $operation,
+    AccountInterface $account,
+  ): AccessResultInterface {
+    if (!$account->hasPermission('bypass node access') && 'delete' === $operation && $entity instanceof EventInstance) {
+      $roles = $account->getRoles();
+      $allowedRoles = $this->settings->getEventForm()->getRolesThatCanDeleteEventInstances();
+      return AccessResult::forbiddenIf(empty(array_intersect($roles, $allowedRoles)));
+    }
+
+    return AccessResult::neutral();
   }
 
 }

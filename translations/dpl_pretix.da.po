@@ -1,0 +1,471 @@
+# Danish translation of module dpl_pretix
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2026-02-04 08:11+0100\n"
+"PO-Revision-Date: 2026-02-04 08:14+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+msgid "@field is required."
+msgstr "@field er påkrævet."
+
+msgid "@value is not a valid domain name"
+msgstr "@value er ikke et gyldigt domænenavn"
+
+msgid "A link to the corresponding date (sub-event) in pretix."
+msgstr "Link til datoen (under-arrangementet) i pretix."
+
+msgid "A link to the corresponding event in pretix."
+msgstr "Link til arrangementet i pretix."
+
+msgid "Add PSP element"
+msgstr "Tilføj psp-element"
+
+msgid "Add instance"
+msgstr "Tilføj instans"
+
+msgid "Admin pretix"
+msgstr "Admin-pretix"
+
+msgid ""
+"At least one event instance is required to set <a "
+"href=\":pretix_event_url\">@event</a> live in pretix"
+msgstr ""
+"Mindst én arrangementinstans er krævet for at offentliggøre <a "
+"href=\":pretix_event_url\">@event</a> i pretix"
+
+msgid "Available PSP elements"
+msgstr "Tilgængelige psp-elementer"
+
+msgid "Before %group"
+msgstr "Før %group"
+
+msgid "Bottom"
+msgstr "Nederst"
+
+msgid "Cannot connect to pretix (@domain)"
+msgstr "Fejl under forbindelse til pretix (@domain)"
+
+msgid "Cannot create quota for sub-event @sub_event on event @event"
+msgstr ""
+"Fejl under oprettelse af kvote for datoen @sub_event på arrangementet @event"
+
+msgid ""
+"Cannot create quota for sub-event @sub_event on event @event; product "
+"@product has no variations"
+msgstr ""
+"Fejl under opretning af kvote for dato @sub_event på arrangement @event; "
+"produktet @product har ingen variationer"
+
+msgid "Cannot create sub-event for event @event"
+msgstr ""
+"Fejl under oprettelse af dato (under-arrangement) for arrangementet @event"
+
+msgid "Cannot get items for template event @event"
+msgstr "Fejl under indlæsning af produkter for skabelonarrangmentet @event"
+
+msgid ""
+"Cannot get quota data for updating sub-event @sub_event on event @event"
+msgstr ""
+"Fejl under indlæsning af kvotedata til opdatering af dato @sub_event på "
+"arrangementet @event"
+
+msgid "Cannot get quotas for sub-event @sub_event"
+msgstr ""
+"Fejl under indlæsning af kvoter for dato (under-arrangement) @sub_event"
+
+msgid "Cannot get quotas for template sub-event @sub_event"
+msgstr ""
+"Fejl inder indlæsning af kvoter for skabelonarrangementsdata @sub_event"
+
+msgid "Cannot get sub-events for template event @event"
+msgstr ""
+"Datoer (under-arrangementer) kan ikke hentes for skabelonarrangementet "
+"@event"
+
+msgid "Cannot update quota for sub-event"
+msgstr "Fejl under opdatering af kvote på dato"
+
+msgid "Cannot update sub-event @sub_event on event @event"
+msgstr "Fejl under opdatering af datoen @sub_event på arrangementet @event"
+
+msgid ""
+"Create a ticket category to set the event price in pretix. Only the price "
+"from the first category will be used."
+msgstr ""
+"Opret en billetkategori for at sætte arrangementsprisen i pretix. Kun "
+"prisen for den første kategori bliver brugt."
+
+msgid "Create and update in pretix"
+msgstr "Opret og opdater i pretix"
+
+msgid "Default event capacity"
+msgstr "Default event capacity"
+
+msgid "Default language code"
+msgstr "Standardsprogkode"
+
+msgid "Default language code used for pretix events"
+msgstr "Standardsprogkode for arrangementer i pretix"
+
+msgid "Default ticket category name"
+msgstr "Standard for billetkategorinavn"
+
+msgid "Default value of %field on new event series."
+msgstr "Standardværdi for %field på ny arrangementserie."
+
+msgid ""
+"Define one template per line on the form <code>«template short name»: "
+"«display name»</code>. Example: %example%"
+msgstr ""
+"Definer én skabelon pr. linje på formen <code>«skabelonarrangements korte "
+"navn»: «visningsnavn»</code>. Eksempel: %example%"
+
+msgid "Disable %field field"
+msgstr "Deaktivér %field-feltet"
+
+msgid "Domain"
+msgstr "Domæne"
+
+msgid "Edit event instance"
+msgstr "Rediger arrangementinstans"
+
+msgid "Edit event series"
+msgstr "Rediger arrangementserie"
+
+msgid "Edit instances"
+msgstr "Redigér instanser"
+
+msgid "Edit pretix settings"
+msgstr "Rediger pretix-indstillinger"
+
+msgid ""
+"Enter a valid pretix service endpoint without path info, such as https://"
+"www.pretix.eu/"
+msgstr ""
+"Indtast et gyldigt pretix-endpoint uden sti, dvs. a la https://"
+"www.pretix.eu/"
+
+msgid "Error deleting @event in pretix: @message"
+msgstr "Fejl under sletning af @event i pretix: @message"
+
+msgid "Error deleting pretix sub-event @sub_event from event @event: @message"
+msgstr ""
+"Fejl under sletning af pretix-dato @sub_event på arrangementet @event: "
+"@message"
+
+msgid "Error parsing pretix template events."
+msgstr "Fejl under indlæsning af pretix-skabelonarrangementer."
+
+msgid "Error setting @event live in pretix: @message"
+msgstr "Fejl under offentliggørelse af @event i pretix: @message"
+
+msgid "Error setting @event not live in pretix: @message"
+msgstr "Fejl under offentliggørelse af @event i pretix: @message"
+
+msgid "Error synchronizing @event: @message"
+msgstr "Fejl under synkronisering af @event: @message"
+
+msgid "Event <a href=\":event_url\">@event</a> created in pretix"
+msgstr "Arrangement <a href=\":event_url\">@event</a> oprettet i pretix"
+
+msgid "Event <a href=\":event_url\">@event</a> set live in pretix"
+msgstr ""
+"Arrangementet <a href=\":event_url\">@event</a> offentliggjort i pretix"
+
+msgid "Event <a href=\":event_url\">@event</a> set not live in pretix"
+msgstr "Arrangementet <a href=\":event_url\">@event</a> skjult i pretix"
+
+msgid "Event <a href=\":event_url\">@event</a> updated in pretix"
+msgstr "Arrangement <a href=\":event_url\">@event</a> opdateret i pretix"
+
+msgid "Event admin URL"
+msgstr "Arrangementadministrations-url"
+
+msgid "Event form"
+msgstr "Event-formular"
+
+msgid ""
+"Event has active orders. For accounting reasons the PSP element can no "
+"longer be changed."
+msgstr ""
+"Arrangementet har aktive ordrer. Af bogholderimæssige årsager kan psp-"
+"elementet derfor ikke ændres."
+
+msgid "Event has been deleted in pretix."
+msgstr "Arrangement slettet i pretix."
+
+msgid "Event shop URL"
+msgstr "Arrangementsbutik-url"
+
+msgid "Event slug template"
+msgstr "Skabelon for “kort navn”"
+
+msgid ""
+"Go to <a href=\":url\">:url</a> and cancel the order before deleting this "
+"event instance."
+msgid_plural ""
+"Go to <a href=\":url\">:url</a> and cancel all @count orders before "
+"deleting this event instance."
+msgstr[0] ""
+"Gå til <a href=\":url\">:url</a> og slet ordren for at denne "
+"arrangementinstans kan slettes."
+msgstr[1] ""
+"Gå til <a href=\":url\">:url</a> og slette alle @count ordrer for at denne "
+"arrangementinstans kan slettes."
+
+msgid "ID"
+msgstr "Id"
+
+msgid "If checked, the %field field will be disabled on the event form"
+msgstr "Markér her hvis %field-feltet skal være deaktiveret"
+
+msgid "Invalid template events in @domain (@message)."
+msgstr "Ugyldigt skabelonarrangement i @domain (@message)."
+
+msgid "Location of pretix section"
+msgstr "Placering af pretix-afsnit"
+
+msgid "Maintain copy"
+msgstr "Vedligehold kopi"
+
+msgid ""
+"More settings will become available when pretix settings are saved and are "
+"valid"
+msgstr ""
+"Flere indstillinger vil blive tilgængelige når pretix-indstillinger er gemt "
+"og gyldige"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "No"
+msgstr "Nej"
+
+msgid "No pretix settings are currently active (based on the domain %domain)."
+msgstr "Ingen pretix-indstillinger er aktive (baseret på domænet %domain)."
+
+msgid "No pretix settings found for domain %domain."
+msgstr "Ingen pretix-indstillinger fundet for domænet %domain."
+
+msgid "None"
+msgstr "Ingen"
+
+msgid "Note: Pinging the API will use saved config."
+msgstr "Bemærk: Forbindelsen til api'et tjekkes med gemte indstillinger."
+
+msgid ""
+"Notice: The settings on this page requires knowledge about <a "
+"href=\":pretix_eventsdocs_url\">pretix events</a> and <a "
+"href=\":pretix_docs_url\">pretix in general</a>."
+msgstr ""
+"Bemærk: Indstillingerne på denne side kræver et vist kendskab til <a "
+"href=\":pretix_eventsdocs_url\">pretix-begivenheder</a> og <a "
+"href=\":pretix_docs_url\">pretix i almindelighed</a>."
+
+msgid "Organizer"
+msgstr "Arrangør"
+
+msgid "PSP element"
+msgstr "Psp-element"
+
+msgid "PSP element (default)"
+msgstr "Psp-element (standard)"
+
+msgid "PSP elements"
+msgstr "Psp-elementer"
+
+msgid "Ping API"
+msgstr "Tjek forbindelse til api"
+
+msgid "Pinged API successfully."
+msgstr "Forbindelse til api oprettet."
+
+msgid "Pinging API failed: @message"
+msgstr "Fejl under forbindelse til api: @message"
+
+msgid "Remove PSP element"
+msgstr "Fjern psp-element"
+
+msgid "Roles that can delete event instances"
+msgstr "Roller der kan slette arrangementsinstanser"
+
+msgid "Select PSP element"
+msgstr "Vælg psp-element"
+
+msgid "Select all roles that should be allowed to delete event instances."
+msgstr "Vælg roller der skal kunne slette arrangementsinstanser."
+
+msgid "Select template event"
+msgstr "Vælg skabelonarrangement"
+
+msgid "Select the PSP element the ticket sales should be registered under."
+msgstr "Vælg det psp-element som billetsalg skal registreres under."
+
+msgid "Template event"
+msgstr "Skabelonarrangement"
+
+msgid ""
+"Template event <a href=\":pretix_event_url\">@event</a> is not valid: "
+"@errors"
+msgstr ""
+"Skabelonarrangementet  <a href=\":pretix_event_url\">@event</a> er ikke "
+"gyldigt: @errors"
+
+msgid "Template event @event has no items"
+msgstr "Skabelonarrangementet @event har ingen produkter"
+
+msgid "Template event @event has no sub-events"
+msgstr "Skabelonarrangement @event har ingen datoer (under-arrangementer)"
+
+msgid "Template event used to create event in pretix."
+msgstr "Skabelonarrangement brugt til at oprette arrangementer i pretix."
+
+msgid "Template events used to create new events in pretix"
+msgstr ""
+"Skabelonarrangementer brugt til oprettelse af nye arrangementer i pretix"
+
+msgid "Template sub-event @sub_event has no quotas"
+msgstr "Skabelonarrangementsdato @sub_event har ingen kvoter"
+
+msgid ""
+"Template used to generate event short forms in pretix. Placeholders<br /"
+"><code>{id}</code>: the event (node) id<br /><code>{random}</code>: a "
+"random string"
+msgstr ""
+"Skabelon brugt til at generere korte navne for arrangementer i pretix. "
+"Pladsholdere<br /><code>{id}</code>: arrangementets id<br /><code>{random}</"
+"code>: en tilfældig tekststreng"
+
+msgid ""
+"The <a href=\":pretix_webhook_url\">pretix webhook URL</a> used by pretix "
+"to send notifications."
+msgstr ""
+"<a href=\":pretix_webhook_url\">pretix-webhook-url'en</a> som pretix sender "
+"notifikationer til."
+
+msgid "The API token of the Organizer Team"
+msgstr "Arrangørgruppens api-token"
+
+msgid ""
+"The Drupal domain, e.g. <code>dpl-cms.dk</code>, that these pretix settings "
+"apply to."
+msgstr ""
+"Drupal-domænet, fx <code>dpl-cms.dk</code>, som disse indstillinger gælder "
+"for."
+
+msgid "The default capacity for new events."
+msgstr "The default capacity for new events."
+
+msgid "The location of the pretix section on event form."
+msgstr "Placeringen af pretix-afsnittet på arrangementsformular."
+
+msgid "The name of the default ticket category added to an event."
+msgstr "Navnet på standardbilletkategorien på et arrangement."
+
+msgid ""
+"The name of the organizer metadata property for the PSP element in pretix "
+"(case sensitive), example <code>PSP</code>."
+msgstr ""
+"Navnet på arrangørens metadataegenskab for psp-element i pretix (der "
+"skelnes mellem store og små bogstaver), fx <code>PSP</code>."
+
+msgid "This event instance has an order in pretix."
+msgid_plural "This event instance has @count orders in pretix."
+msgstr[0] "Denne arrangementinstans har en ordre i pretix."
+msgstr[1] "Denne arrangementinstans har @count ordrer i pretix."
+
+msgid ""
+"This event series uses pretix and has multiple event instances. The "
+"instances must be edited on <a href=\":edit_instances_url\">the "
+"@edit_instances page</a>."
+msgstr ""
+"Denne arrangementserie anvender pretix og har mere en én "
+"arrangementinstans. Instanserne skal redigeres på <a "
+"href=\":edit_instances_url\">@edit_instances-siden</a>."
+
+msgid "This field is managed by pretix for this event instance."
+msgstr "Dette felt administreres af pretix for denne arrangementinstans."
+
+msgid ""
+"This is the default API token used when connecting to pretix. If you "
+"provide short form/API token for a specific library (below), events related "
+"to that library will use that key instead of the default key."
+msgstr ""
+"Standard-api-token brugt til forbindelse til pretix (kan overskrives på "
+"biblioteksniveau)."
+
+msgid ""
+"This is the default organizer short form used when connecting to pretix. If "
+"you provide short form/API token for a specific library (below), events "
+"related to that library will use that key instead of the default key."
+msgstr ""
+"This is the default organizer short form used when connecting to pretix. If "
+"you provide short form/API token for a specific library (below), events "
+"related to that library will use that key instead of the default key."
+
+msgid "Tickets"
+msgstr "Billetter"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Top"
+msgstr "Øverst"
+
+msgid "URL"
+msgstr "Url"
+
+msgid ""
+"Use <a href=\":add_instance_url\">@add_instance</a> to add another date."
+msgstr ""
+"Brug <a href=\":add_instance_url\">@add_instance</a> for at tilføje en dato."
+
+msgid "Value"
+msgstr "Værdi"
+
+msgid ""
+"When set, a corresponding event is created and updated in <a "
+"href=\":organizer_url\">pretix</a>."
+msgstr ""
+"Når dette er markeret vil et tilsvarende arrangement blive oprettet og "
+"opdateret i <a href=\":organizer_url\">pretix</a>."
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "pretix (%section)"
+msgstr "pretix (%section)"
+
+msgid "pretix ID"
+msgstr "pretix-id"
+
+msgid "pretix PSP property name"
+msgstr "Psp-egenskabsnavn i pretix"
+
+msgid "pretix date (sub-event)"
+msgstr "pretix-dato (under-arrangement)"
+
+msgid "pretix event"
+msgstr "pretix-arrangement"
+
+msgid "pretix event node defaults"
+msgstr "pretix-arrangementstandarder"
+
+msgid "pretix webhook URL"
+msgstr "pretix-webhook-url"
+
+msgctxt "dpl_pretix"
+msgid "@name version: @version"
+msgstr "@name-version: @version"

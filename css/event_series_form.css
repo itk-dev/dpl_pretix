@@ -1,0 +1,19 @@
+/**
+ *  Hacks for the event series form, cf. ../../src/FormHelper.php
+ */
+.dpl-pretix-single-data-only {
+  tbody {
+    /* Don't display the row drag handle. */
+    td:nth-child(1),
+    /* Don't display the small remove button (✕) next to the actual input fields. */
+    td:nth-child(2) .multiple-fields-remove-button,
+    /* Don't display the Remove button. */
+    td:nth-child(3),
+    /* Don't display the row weight. */
+    td:nth-child(4),
+    /* Don't display the second AND last table row. */
+    tr:last-child:nth-child(2) {
+      display: none;
+    }
+  }
+}

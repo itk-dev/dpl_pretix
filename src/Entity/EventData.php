@@ -315,6 +315,26 @@ final class EventData implements \JsonSerializable {
   }
 
   /**
+   * Get pretix orders admin event URL.
+   */
+  public function getEventOrdersAdminUrl(): ?string {
+    if (!$this->hasPretixEvent()) {
+      return NULL;
+    }
+
+    assert(isset($this->pretixUrl, $this->pretixOrganizer, $this->pretixEvent));
+    $url = sprintf('%s/control/event/%s/%s/orders', rtrim($this->pretixUrl, '/'), urlencode($this->pretixOrganizer),
+      urlencode($this->pretixEvent));
+
+    $query = [];
+    if (isset($this->pretixSubeventId)) {
+      $query['subevent'] = $this->pretixSubeventId;
+    }
+
+    return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
+  }
+
+  /**
    * Get pretix event shop URL.
    */
   public function getEventShopUrl(): ?string {

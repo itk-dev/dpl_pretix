@@ -1,0 +1,4 @@
+event_series_form:
+  css:
+    component:
+      css/event_series_form.css: {}

@@ -2,6 +2,7 @@
 
 namespace Drupal\dpl_pretix;
 
+use Doctrine\Common\Collections\Collection;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\EntityForm;
@@ -9,14 +10,18 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\dpl_pretix\Entity\EventData;
+use Drupal\dpl_pretix\Pretix\ApiClient\Entity\Order;
+use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\recurring_events\Entity\EventInstance;
 use Drupal\recurring_events\Entity\EventSeries;
-use Drupal\webform\Utility\WebformArrayHelper;
+use Drupal\recurring_events\Form\EventInstanceDeleteForm;
 
 /**
  * Form helper.
@@ -25,16 +30,17 @@ class FormHelper {
   use StringTranslationTrait;
   use DependencySerializationTrait;
 
-  public const FORM_KEY = 'dpl_pretix';
-  public const ELEMENT_MAINTAIN_COPY = 'maintain_copy';
-  public const ELEMENT_TEMPLATE_EVENT = 'template_event';
-  public const ELEMENT_PSP_ELEMENT = 'psp_element';
+  public const string FORM_KEY = 'dpl_pretix';
+  public const string ELEMENT_MAINTAIN_COPY = 'maintain_copy';
+  public const string ELEMENT_TEMPLATE_EVENT = 'template_event';
+  public const string ELEMENT_PSP_ELEMENT = 'psp_element';
 
-  public const FIELD_TICKET_URL = 'field_event_link';
-  public const FIELD_TICKET_CATEGORIES = 'field_ticket_categories';
-  public const FIELD_TICKET_CAPACITY = 'field_ticket_capacity';
+  // @see /admin/structure/events/instance/types/eventinstance_type/default/edit/fields
+  public const string FIELD_TICKET_URL = 'field_event_link';
+  public const string FIELD_TICKET_CATEGORIES = 'field_ticket_categories';
+  public const string FIELD_TICKET_CAPACITY = 'field_ticket_capacity';
 
-  public const CUSTOM_FORM_VALUES = 'custom_form_values';
+  public const string CUSTOM_FORM_VALUES = 'custom_form_values';
 
   public function __construct(
     private readonly Settings $settings,
@@ -89,6 +95,11 @@ class FormHelper {
     if (!($formObject instanceof ContentEntityFormInterface)) {
       return;
     }
+
+    if ($formObject instanceof EventInstanceDeleteForm) {
+      $this->checkPretixOrders($form, $formState);
+    }
+
     $operation = $formObject->getOperation();
     if (!in_array($operation, ['add', 'edit'], TRUE)) {
       return;
@@ -99,6 +110,118 @@ class FormHelper {
     }
     elseif ($instance = $this->getEventInstanceEntity($formState)) {
       $this->formAlterEventInstance($form, $formState, $instance);
+    }
+  }
+
+  /**
+   * Implements hook_field_group_form_process_build_alter().
+   */
+  public function fieldGroupFormProcessBuildAlter(array &$element, FormStateInterface $formState, array &$form): void {
+    if (isset($form[self::FORM_KEY])) {
+      $this->placeElementOnForm($form[self::FORM_KEY], $form);
+      $this->hideDatesGroup($form, $formState);
+
+      if (isset($element[self::FIELD_TICKET_CATEGORIES])) {
+        $anchor = $element[self::FIELD_TICKET_CATEGORIES];
+
+        $messageElement = [
+          // Wrap message in container to make states work.
+          '#type' => 'container',
+          '#group' => $anchor['#group'],
+
+          'message' => [
+            '#theme' => 'status_messages',
+            '#message_list' => [
+              'warning' => [
+                $this->t('Create a ticket category to set the event price in pretix. Only the price from the first category will be used.'),
+              ],
+            ],
+          ],
+          '#states' => [
+            'visible' => [
+              ':input[name="dpl_pretix[maintain_copy]"]' => ['checked' => TRUE],
+            ],
+          ],
+        ];
+        if (isset($anchor['#weight'])) {
+          // Show the message before the anchor element.
+          $messageElement['#weight'] = $anchor['#weight'] - 1;
+        }
+        $element[self::FIELD_TICKET_CATEGORIES . '_message'] = $messageElement;
+      }
+    }
+  }
+
+  /**
+   * Hide the Dates group depending on event series state.
+   */
+  private function hideDatesGroup(array &$form, FormStateInterface $formState): void {
+    if ($event = $this->getEventSeriesEntity($formState)) {
+      $maintainCopy = (bool) $this->eventDataHelper->getEventData($event)?->maintainCopy;
+      if ($event->isNew() || !$maintainCopy) {
+        return;
+      }
+
+      $form['custom_date']['stuff'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          MessengerInterface::TYPE_STATUS => [
+            $this->t('Use <a href=":add_instance_url">@add_instance</a> to add another date.', [
+              ':add_instance_url' => Url::fromRoute('entity.eventseries.add_instance_form',
+                [
+                  'eventseries' => $event->id(),
+                ])->toString(TRUE)->getGeneratedUrl(),
+              '@add_instance' => $this->t('Add instance'),
+            ]),
+          ],
+        ],
+      ];
+
+      // Make sure that user cannot “Add more" instances.
+      $form['custom_date']['widget'][1]['#access'] = FALSE;
+      $form['custom_date']['widget']['add_more']['#access'] = FALSE;
+      // Manipulating the widget cardinality does not work as hoped.
+      // $form['custom_date']['widget']['#cardinality'] = 1;
+      // $form['custom_date']['widget']['#cardinality_multiple'] =FALSE;
+      // CSS is our friend in need.
+      $form['custom_date']['#attributes']['class'][] = 'dpl-pretix-single-data-only';
+      $form['#attached']['library'][] = 'dpl_pretix/event_series_form';
+
+      // Hide Dates group if more than one instance exists in series.
+      // If an event series has only a single instance, it's safe to edit the
+      // instance on the event series form (cf.
+      // https://github.com/danskernesdigitalebibliotek/dpl-cms/blob/develop/web/modules/custom/dpl_event/src/Plugin/EventInstanceCreator/DplEventInstanceCreator.php#L31-L34).
+      $datesGroupKey = 'group_dates';
+      if ($event->getInstanceCount() > 1
+        && isset($form['#fieldgroups'][$datesGroupKey]) && isset($form[$datesGroupKey])) {
+        $weight = $form['#fieldgroups'][$datesGroupKey]->weight;
+        // unset($form['#fieldgroups'][$datesGroupKey]);
+        // unset($form[$datesGroupKey]);
+        // Hide all elements in the Dates group.
+        foreach (Element::children($form) as $key) {
+          if ($datesGroupKey === ($form[$key]['#group'] ?? NULL)) {
+            $form[$key]['#access'] = FALSE;
+          }
+        }
+
+        $datesGroupInfoKey = $datesGroupKey . '_info';
+        $form[$datesGroupInfoKey] = [
+          '#weight' => $weight,
+          '#theme' => 'status_messages',
+          '#message_list' => [
+            MessengerInterface::TYPE_STATUS => [
+              $this->t('This event series uses pretix and has multiple event instances. The instances must be edited on <a href=":edit_instances_url">the @edit_instances page</a>.',
+                [
+                  ':edit_instances_url' => Url::fromRoute('view.event_instance_list.page_1',
+                    [
+                      'eventseries' => $event->id(),
+                    ])->toString(TRUE)->getGeneratedUrl(),
+                  '@edit_instances' => $this->t('Edit instances'),
+                ]),
+            ],
+          ],
+        ];
+      }
     }
   }
 
@@ -115,15 +238,29 @@ class FormHelper {
       ?? $this->eventDataHelper->createEventData($entity);
 
     $form[self::FORM_KEY] = [
-      '#weight' => $this->settings->getEventForm()->weight ?? 9999,
       '#type' => 'details',
-      '#title' => $this->t('pretix'),
+      '#title' => 'pretix',
       '#tree' => TRUE,
       '#open' => TRUE,
     ];
+    $this->placeElementOnForm($form[self::FORM_KEY], $form);
+
+    if ($this->settings->getEventForm()->disableFieldRelevantTicketManager) {
+      $form[EventFormSettings::FIELD_RELEVANT_TICKET_MANAGER]['#access'] = FALSE;
+    }
 
     $settings = $this->settings->getPretixSettings();
     if (!$settings->isReady()) {
+      $warnings = [
+        $this->t('No pretix settings found for domain %domain.', ['%domain' => $settings->domain]),
+      ];
+
+      if ($this->currentUser->hasPermission('administer dpl_pretix settings')) {
+        $warnings[] = Link::fromTextAndUrl($this->t('Edit pretix settings'),
+          Url::fromRoute('dpl_pretix.settings')
+        )->toRenderable();
+      }
+
       $form[self::FORM_KEY]['warning'] = [
         // Wrap message in container to make states work.
         '#type' => 'container',
@@ -131,9 +268,7 @@ class FormHelper {
         'message' => [
           '#theme' => 'status_messages',
           '#message_list' => [
-            'warning' => [
-              $this->t('No pretix settings found for domain %domain.', ['%domain' => $settings->domain]),
-            ],
+            'warning' => $warnings,
           ],
         ],
       ];
@@ -255,28 +390,6 @@ class FormHelper {
     $form['#validate'][] = [$this, 'validateEventForm'];
 
     if (isset($form[self::FIELD_TICKET_CATEGORIES])) {
-      $element = [
-        // Wrap message in container to make states work.
-        '#type' => 'container',
-
-        'message' => [
-          '#theme' => 'status_messages',
-          '#message_list' => [
-            'warning' => [
-              $this->t('Create a ticket category to set the event price in pretix. Only the price from the first category will be used.'),
-            ],
-          ],
-        ],
-        '#states' => [
-          'visible' => [
-            ':input[name="dpl_pretix[maintain_copy]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-      if (isset($form[self::FIELD_TICKET_CATEGORIES]['#weight'])) {
-        $element['#weight'] = $form[self::FIELD_TICKET_CATEGORIES]['#weight'];
-      }
-      WebformArrayHelper::insertBefore($form, self::FIELD_TICKET_CATEGORIES, self::FIELD_TICKET_CATEGORIES . '_message', $element);
       // Require (at least) one ticket category.
       $form[self::FIELD_TICKET_CATEGORIES]['widget']['#required'] = TRUE;
     }
@@ -299,12 +412,12 @@ class FormHelper {
         $this->t('This field is managed by pretix for this event instance.'));
 
       $form[self::FORM_KEY] = [
-        '#weight' => $this->settings->getEventForm()->weight ?? 9999,
         '#type' => 'details',
-        '#title' => $this->t('pretix'),
+        '#title' => 'pretix',
         '#tree' => TRUE,
         '#open' => TRUE,
       ];
+      $this->placeElementOnForm($form[self::FORM_KEY], $form);
 
       $instanceData = $this->eventDataHelper->getEventData($entity);
       if ($pretixAdminUrl = $instanceData?->getEventAdminUrl()) {
@@ -391,6 +504,88 @@ class FormHelper {
         $element['widget'][0]['uri']['#description']['#items'][] = $reason;
       }
     }
+  }
+
+  /**
+   * Place element on form.
+   */
+  private function placeElementOnForm(array &$element, array $form, ?string $anchor = NULL): void {
+    $anchor ??= (string) $this->settings->getEventForm()->location;
+
+    if (EventFormSettings::LOCATION_TOP === $anchor) {
+      $element['#weight'] = -9999;
+    }
+    elseif (EventFormSettings::LOCATION_BOTTOM === $anchor) {
+      $element['#weight'] = 9999;
+    }
+    elseif (str_starts_with($anchor, EventFormSettings::LOCATION_BEFORE_PREFIX)) {
+      $followingSibling = substr($anchor,
+        strlen(EventFormSettings::LOCATION_BEFORE_PREFIX));
+      if (isset($form['#fieldgroups'][$followingSibling]->weight)) {
+        $element['#weight'] = $form['#fieldgroups'][$followingSibling]->weight;
+      }
+    }
+  }
+
+  /**
+   * Check for pretix orders for event instance.
+   */
+  private function checkPretixOrders(
+    array &$form,
+    FormStateInterface $formState,
+  ): void {
+    $instance = $this->getEventInstanceEntity($formState);
+    if (NULL === $instance) {
+      return;
+    }
+    $instanceData = $this->eventDataHelper->getEventData($instance);
+    if (NULL === $instanceData?->pretixEvent) {
+      return;
+    }
+
+    $orders = $this->getInstanceOrders($instanceData);
+    if (!$orders->isEmpty()) {
+      $messages = [
+        $this->formatPlural(
+          $orders->count(),
+          'This event instance has an order in pretix.',
+          'This event instance has @count orders in pretix.'
+        ),
+      ];
+      if ($ordersUrl = $instanceData->getEventOrdersAdminUrl()) {
+        $messages[] = $this->formatPlural(
+          $orders->count(),
+          'Go to <a href=":url">:url</a> and cancel the order before deleting this event instance.',
+          'Go to <a href=":url">:url</a> and cancel all @count orders before deleting this event instance.',
+          [':url' => $ordersUrl]
+        );
+      }
+
+      $form['dpl_pretix_messages'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          MessengerInterface::TYPE_WARNING => $messages,
+        ],
+      ];
+
+      $form['actions']['submit']['#access'] = FALSE;
+    }
+  }
+
+  /**
+   * Get all orders for an event instance.
+   *
+   * @return \Doctrine\Common\Collections\Collection<int, Order>
+   *   The orders if any.
+   */
+  private function getInstanceOrders(EventData $instanceData): Collection {
+    $orders = $this->pretixHelper->client()->getOrders((string) $instanceData->pretixEvent, [
+      'subevent' => $instanceData->pretixSubeventId,
+    ]);
+
+    // Filter out orders with no positions.
+    // @todo Client::getOrders returning orders with no positions looks like a bug.
+    return $orders->filter(static fn (Order $order) => !$order->getPositions()->isEmpty());
   }
 
 }

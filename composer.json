@@ -1,8 +1,11 @@
 {
     "name": "itk-dev/dpl_pretix",
+    "description": "pretix for DPL CMS",
+    "license": "GPL-2.0-or-later",
     "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/dpl_pretix",
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "drupal/core-recommended": "^10"
     },
     "require-dev": {
@@ -18,19 +21,5 @@
             "ergebnis/composer-normalize": true,
             "phpstan/extension-installer": true
         }
-    },
-    "scripts": {
-        "coding-standards-apply": [
-            "@coding-standards-apply/phpcs"
-        ],
-        "coding-standards-apply/phpcs": [
-            "vendor/bin/phpcbf --standard=phpcs.xml.dist"
-        ],
-        "coding-standards-check": [
-            "@coding-standards-check/phpcs"
-        ],
-        "coding-standards-check/phpcs": [
-            "vendor/bin/phpcs --standard=phpcs.xml.dist"
-        ]
     }
 }
