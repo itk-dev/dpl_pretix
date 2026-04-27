@@ -313,6 +313,9 @@ class FormHelper {
       foreach ($elements as $element) {
         $options[$element->value] = $element->name;
       }
+      if (!empty($eventData->pspElement) && !isset($options[$eventData->pspElement])) {
+        $options[$eventData->pspElement] = $this->t('%psp_element (deleted)', ['%psp_element' => $eventData->pspElement]);
+      }
 
       // PSP is a code for accounting. If an event has orders, we don't allow
       // this to be changed, as this would invalidate the accounting.
