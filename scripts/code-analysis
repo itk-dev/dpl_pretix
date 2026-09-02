@@ -11,15 +11,15 @@ compose() {
 }
 
 composer() {
-  compose exec dpl-cms composer "$@"
+  compose exec dpl-web composer "$@"
 }
 
 drush() {
-  compose exec dpl-cms vendor/bin/drush "$@"
+  compose exec dpl-web vendor/bin/drush "$@"
 }
 
 shell() {
-  compose exec dpl-cms "$@"
+  compose exec dpl-web "$@"
 }
 
 compose up --detach --build

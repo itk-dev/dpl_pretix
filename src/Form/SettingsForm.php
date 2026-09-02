@@ -5,6 +5,7 @@ namespace Drupal\dpl_pretix\Form;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Extension\InfoParser;
@@ -49,6 +50,7 @@ final class SettingsForm extends ConfigFormBase {
 
   public function __construct(
     ConfigFactoryInterface $configFactory,
+    TypedConfigManagerInterface $typedConfigManager,
     private readonly LanguageManagerInterface $languageManager,
     private readonly EntityFieldManagerInterface $entityFieldManager,
     private readonly RoleStorageInterface $roleStorage,
@@ -56,7 +58,7 @@ final class SettingsForm extends ConfigFormBase {
     private readonly Settings $settings,
     private readonly PretixHelper $pretixHelper,
   ) {
-    parent::__construct($configFactory);
+    parent::__construct($configFactory, $typedConfigManager);
   }
 
   /**
@@ -71,6 +73,7 @@ final class SettingsForm extends ConfigFormBase {
 
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('language_manager'),
       $container->get('entity_field.manager'),
       $container->get('entity_type.manager')->getStorage('user_role'),

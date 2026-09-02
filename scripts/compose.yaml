@@ -1,5 +1,5 @@
 services:
-  dpl-cms:
+  dpl-web:
     # image: itkdev/php8.3-fpm:latest
     build:
       # context: .
@@ -7,7 +7,7 @@ services:
         # syntax=docker/dockerfile:1
         # check=skip=SecretsUsedInArgOrEnv
 
-        FROM itkdev/php8.3-fpm:latest
+        FROM itkdev/php8.4-fpm:latest
         ENV PHP_MEMORY_LIMIT=512M
 
         # https://stackoverflow.com/a/33439625
@@ -15,8 +15,10 @@ services:
 
         WORKDIR /app
 
-        RUN curl --location https://github.com/danskernesdigitalebibliotek/dpl-cms/archive/refs/heads/main.tar.gz --output main.tar.gz \
-          && tar xvf main.tar.gz --strip-components=1 \
+        RUN curl \
+          --location https://github.com/danskernesdigitalebibliotek/dpl-web/archive/refs/tags/2026.34.2.tar.gz \
+          --output main.tar.gz \
+          && tar xvf main.tar.gz --strip-components=2 \
           && rm main.tar.gz \
           && composer install
 
@@ -35,6 +37,8 @@ services:
         ENV GO_GRAPHQL_CONSUMER_SECRET=this_is_not_a_real_secret
         ENV BNF_GRAPHQL_CONSUMER_USER_PASSWORD==this_is_not_a_real_password
         ENV NEXT_PUBLIC_GO_GRAPHQL_CONSUMER_USER_PASSWORD=this_is_not_a_real_password
+        ENV MOBILE_GRAPHQL_CONSUMER_SECRET=this_is_not_a_real_secret
+        ENV MOBILE_GRAPHQL_CONSUMER_USER_PASSWORD=this_is_not_a_real_password
 
         ENV GO_DOMAIN=dpl_pretix.example.com
         ENV LAGOON_ROUTE=https://dpl_pretix.example.com

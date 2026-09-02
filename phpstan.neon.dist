@@ -6,7 +6,7 @@ parameters:
     analyse:
       - src/Pretix/ApiClient
     analyseAndScan:
-      - vendor
+      - vendor (?)
   ignoreErrors:
     - '#(Function|Method) (Drupal\\dpl_pretix\\|dpl_pretix_).+ return type has no value type specified in iterable type array.#'
     - '#(Function|Method) (Drupal\\dpl_pretix\\|dpl_pretix_).+ has parameter \$(element|form|complete_form|events_to_create|options) with no value type specified in iterable type array.#'

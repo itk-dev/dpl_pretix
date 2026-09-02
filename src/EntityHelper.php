@@ -138,6 +138,7 @@ final class EntityHelper {
     }
 
     // Get a fresh copy of the event with updated instance data.
+    /** @var int $eventId */
     $eventId = $event->id();
     $this->eventSeriesStorage->resetCache([$eventId]);
     $event = $this->eventSeriesStorage->load($eventId);
@@ -531,7 +532,7 @@ final class EntityHelper {
       throw $this->pretixException($this->t('Cannot get quota data for updating sub-event @sub_event on event @event',
         [
           '@sub_event' => $subEventId,
-          '@event' => $instance->getEventSeries()->id(),
+          '@event' => $instance->getEventSeries()?->id(),
         ]));
     }
     try {
@@ -544,7 +545,7 @@ final class EntityHelper {
       throw $this->pretixException($this->t('Cannot update sub-event @sub_event on event @event',
         [
           '@sub_event' => $subEventId,
-          '@event' => $instance->getEventSeries()->id(),
+          '@event' => $instance->getEventSeries()?->id(),
         ]), $exception);
     }
 
@@ -929,7 +930,7 @@ final class EntityHelper {
     $priceFieldName = 'field_ticket_category_price';
 
     $price = 0.00;
-    /** @var \Drupal\Core\Field\EntityReferenceFieldItemList $field */
+    /** @var \Drupal\Core\Field\EntityReferenceFieldItemList<\Drupal\paragraphs\Entity\Paragraph> $field */
     $field = $event->get($fieldName);
     $categories = $field->referencedEntities();
     /** @var \Drupal\paragraphs\Entity\Paragraph $category */
