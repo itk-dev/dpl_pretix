@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: |
           docker run --rm --volume "$PWD:/mnt" koalaman/shellcheck:stable scripts/code-analysis scripts/build-release
 
@@ -39,6 +39,13 @@ jobs:
     name: code-analysis/phpstan
     runs-on: ubuntu-latest
     strategy:
+      matrix:
+        dpl_web_version:
+          - main
+          # The first with Drupal 11
+          - 2026.36.0
+          # The last with Drupal 10
+          - 2026.34.2
       fail-fast: false
     env:
       # https://getcomposer.org/doc/03-cli.md#composer-auth
@@ -49,6 +56,6 @@ jobs:
           }
         }
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: |
-          ./scripts/code-analysis
+          DPL_WEB_VERSION=${{ matrix.dpl_web_version }} ./scripts/code-analysis

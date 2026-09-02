@@ -18,8 +18,10 @@ class EventDataHelper {
   private const EVENT_TABLE_NAME = 'dpl_pretix_events';
 
   public function __construct(
-    private readonly Settings $settings,
-    private readonly Connection $database,
+    // See https://github.com/mglaman/phpstan-drupal/issues/730 for details on
+    // why we use protected properties here.
+    protected readonly Settings $settings,
+    protected readonly Connection $database,
   ) {
   }
 

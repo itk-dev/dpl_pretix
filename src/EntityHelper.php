@@ -6,7 +6,6 @@ use Drupal\Component\Utility\Random;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -24,7 +23,6 @@ use Drupal\dpl_pretix\Pretix\ApiClient\Entity\SubEvent as PretixSubEvent;
 use Drupal\recurring_events\Entity\EventInstance;
 use Drupal\recurring_events\Entity\EventSeries;
 use Drupal\recurring_events\EventInterface;
-use Drupal\recurring_events\EventSeriesStorageInterface;
 use Psr\Log\LoggerInterface;
 use Safe\DateTimeImmutable;
 
@@ -40,38 +38,22 @@ final class EntityHelper {
    *
    * @var \Drupal\Component\Utility\Random
    */
-  private Random $random;
+  protected Random $random;
 
   private const ITEM_PRICE_OVERRIDES = 'item_price_overrides';
   private const VARIATION_PRICE_OVERRIDES = 'variation_price_overrides';
 
-  /**
-   * DPL Event settings (cf. /admin/config/dpl-event/settings).
-   *
-   * @var \Drupal\Core\Config\ImmutableConfig
-   */
-  private ImmutableConfig $dplEventSettings;
-
-  /**
-   * The event series storage.
-   *
-   * @var \Drupal\recurring_events\EventSeriesStorageInterface
-   */
-  private EventSeriesStorageInterface $eventSeriesStorage;
-
   public function __construct(
-    private readonly Settings $settings,
-    private readonly EventDataHelper $eventDataHelper,
-    private readonly PretixHelper $pretixHelper,
-    private readonly MessengerInterface $messenger,
-    private readonly LoggerInterface $logger,
-    ConfigFactoryInterface $configFactory,
-    EntityTypeManagerInterface $entityTypeManager,
+    // See https://github.com/mglaman/phpstan-drupal/issues/730 for details on
+    // why we use protected properties here.
+    protected readonly Settings $settings,
+    protected readonly EventDataHelper $eventDataHelper,
+    protected readonly PretixHelper $pretixHelper,
+    protected readonly MessengerInterface $messenger,
+    protected readonly LoggerInterface $logger,
+    protected readonly ConfigFactoryInterface $configFactory,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
   ) {
-    $this->dplEventSettings = $configFactory->get('dpl_event.settings');
-    /** @var \Drupal\recurring_events\EventSeriesStorageInterface $eventSeriesStorage */
-    $eventSeriesStorage = $entityTypeManager->getStorage('eventseries');
-    $this->eventSeriesStorage = $eventSeriesStorage;
   }
 
   /**
@@ -140,8 +122,9 @@ final class EntityHelper {
     // Get a fresh copy of the event with updated instance data.
     /** @var int $eventId */
     $eventId = $event->id();
-    $this->eventSeriesStorage->resetCache([$eventId]);
-    $event = $this->eventSeriesStorage->load($eventId);
+    $eventSeriesStorage = $this->entityTypeManager->getStorage('eventseries');
+    $eventSeriesStorage->resetCache([$eventId]);
+    $event = $eventSeriesStorage->load($eventId);
     if (!($event instanceof EventSeries)) {
       throw new SynchronizeException(sprintf('Cannot load event series %s', $eventId));
     }
@@ -205,7 +188,7 @@ final class EntityHelper {
   /**
    * Create event in pretix.
    */
-  public function createEvent(EventSeries $event, string $templateEvent, EventData $data): ?PretixEvent {
+  public function createEvent(EventSeries $event, string $templateEvent, EventData $data): PretixEvent {
     $settings = $this->settings->getPretixSettings();
 
     $this->logger->info('Creating event @event in pretix', [
@@ -250,7 +233,7 @@ final class EntityHelper {
   /**
    * Update event in pretix.
    */
-  public function updateEvent(EventSeries $event, string $templateEvent, EventData $data): ?PretixEvent {
+  public function updateEvent(EventSeries $event, string $templateEvent, EventData $data): PretixEvent {
     $this->logger->info('Updating event @event in pretix', [
       '@event' => $event->id(),
     ]);
@@ -777,7 +760,8 @@ final class EntityHelper {
     // Important: meta_data value must be an object!
     $data['meta_data'] = (object) ($data['meta_data'] ?? []);
 
-    $data['currency'] = $this->dplEventSettings->get('price_currency') ?? 'DKK';
+    $dplEventSettings = $this->configFactory->get('dpl_event.settings');
+    $data['currency'] = $dplEventSettings->get('price_currency') ?? 'DKK';
 
     return $data;
   }
@@ -793,7 +777,7 @@ final class EntityHelper {
     $pretixSettings = $this->settings->getPretixSettings();
 
     $replacements = [
-      '{id}' => $event->id(),
+      '{id}' => (string) $event->id(),
       '{random}' => $this->random->machineName(8, TRUE),
     ];
 
@@ -915,7 +899,7 @@ final class EntityHelper {
    * Get default language code for an event.
    */
   private function getDefaultLanguageCode(EventInterface $event): string {
-    return $this->settings->getPretixSettings()->defaultLanguageCode ?? 'en';
+    return $this->settings->getPretixSettings()->defaultLanguageCode;
   }
 
   /**
@@ -968,7 +952,7 @@ final class EntityHelper {
    *
    * @var array<string, mixed>
    */
-  private static array $formValues = [];
+  protected static array $formValues = [];
 
   /**
    * Set event form values needed for updating events in pretix.
@@ -1024,7 +1008,7 @@ final class EntityHelper {
    *
    * @var array<string, PretixEvent|PretixSubEvent|bool>
    */
-  private static array $processedEntities = [];
+  protected static array $processedEntities = [];
 
   /**
    * Get data for a processed entity, if any.
@@ -1126,7 +1110,7 @@ final class EntityHelper {
    *
    * @var \Drupal\recurring_events\Entity\EventSeries[]
    */
-  private array $eventsWithPendingInstances = [];
+  protected array $eventsWithPendingInstances = [];
 
   /**
    * Tell that event has pending instances.

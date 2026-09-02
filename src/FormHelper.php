@@ -43,12 +43,14 @@ class FormHelper {
   public const string CUSTOM_FORM_VALUES = 'custom_form_values';
 
   public function __construct(
-    private readonly Settings $settings,
-    private readonly EntityHelper $eventHelper,
-    private readonly EventDataHelper $eventDataHelper,
-    private readonly PretixHelper $pretixHelper,
-    private readonly MessengerInterface $messenger,
-    private readonly AccountInterface $currentUser,
+    // See https://github.com/mglaman/phpstan-drupal/issues/730 for details on
+    // why we use protected properties here.
+    protected readonly Settings $settings,
+    protected readonly EntityHelper $eventHelper,
+    protected readonly EventDataHelper $eventDataHelper,
+    protected readonly PretixHelper $pretixHelper,
+    protected readonly MessengerInterface $messenger,
+    protected readonly AccountInterface $currentUser,
   ) {
   }
 
@@ -308,7 +310,7 @@ class FormHelper {
     $ding_pretix_psp_elements = $this->settings->getPspElements();
     $metaKey = $ding_pretix_psp_elements->pretixPspMetaKey ?? NULL;
     $elements = $ding_pretix_psp_elements->list ?? [];
-    if (!empty($metaKey) && is_array($elements) && !empty($elements)) {
+    if (!empty($metaKey) && !empty($elements)) {
       $options = [];
       foreach ($elements as $element) {
         $options[$element->value] = $element->name;

@@ -8,6 +8,7 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\InfoParser;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
@@ -22,7 +23,6 @@ use Drupal\dpl_pretix\Settings\EventFormSettings;
 use Drupal\dpl_pretix\Settings\PretixSettings;
 use Drupal\field\FieldConfigInterface;
 use Drupal\user\RoleInterface;
-use Drupal\user\RoleStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use function Safe\preg_match;
@@ -51,12 +51,15 @@ final class SettingsForm extends ConfigFormBase {
   public function __construct(
     ConfigFactoryInterface $configFactory,
     TypedConfigManagerInterface $typedConfigManager,
-    private readonly LanguageManagerInterface $languageManager,
-    private readonly EntityFieldManagerInterface $entityFieldManager,
-    private readonly RoleStorageInterface $roleStorage,
-    private readonly ModuleHandlerInterface $moduleHandler,
-    private readonly Settings $settings,
-    private readonly PretixHelper $pretixHelper,
+    // See https://github.com/mglaman/phpstan-drupal/issues/730 for details on
+    // why we use protected properties here.
+    protected readonly LanguageManagerInterface $languageManager,
+    protected readonly EntityFieldManagerInterface $entityFieldManager,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly ModuleHandlerInterface $moduleHandler,
+    protected readonly string $root,
+    protected readonly Settings $settings,
+    protected readonly PretixHelper $pretixHelper,
   ) {
     parent::__construct($configFactory, $typedConfigManager);
   }
@@ -71,13 +74,21 @@ final class SettingsForm extends ConfigFormBase {
     /** @var \Drupal\dpl_pretix\PretixHelper $pretixHelper */
     $pretixHelper = $container->get(PretixHelper::class);
 
+    /**
+     * @var string $root
+     *
+     * @see https://www.drupal.org/node/2330441
+     */
+    $root = $container->getParameter('app.root');
+
     return new static(
       $container->get('config.factory'),
       $container->get('config.typed'),
       $container->get('language_manager'),
       $container->get('entity_field.manager'),
-      $container->get('entity_type.manager')->getStorage('user_role'),
+      $container->get('entity_type.manager'),
       $container->get('module_handler'),
+      $root,
       $settings,
       $pretixHelper,
     );
@@ -151,7 +162,7 @@ final class SettingsForm extends ConfigFormBase {
     try {
       $project = 'dpl_pretix';
       $module = $this->moduleHandler->getModule($project);
-      $info = (new InfoParser())->parse($module->getFileInfo()
+      $info = (new InfoParser($this->root))->parse($module->getFileInfo()
         ->getPathname());
 
       $info['project'] = $project;
@@ -518,6 +529,7 @@ YAML
     // @todo Get the label from the actual field group.
     $ticketsGroupLabel = $this->t('Tickets');
 
+    $roleStorage = $this->entityTypeManager->getStorage('user_role');
     $form[$section] = [
       '#type' => 'details',
       '#title' => $this->t('Event form'),
@@ -544,7 +556,7 @@ YAML
 
       'roles_that_can_delete_event_instances' => [
         '#type' => 'checkboxes',
-        '#options' => array_map(static fn (RoleInterface $role) => $role->label(), $this->roleStorage->loadMultiple()),
+        '#options' => array_map(static fn (RoleInterface $role) => $role->label(), $roleStorage->loadMultiple()),
         '#title' => $this->t('Roles that can delete event instances'),
         '#default_value' => $defaults->rolesThatCanDeleteEventInstances,
         '#description' => $this->t('Select all roles that should be allowed to delete event instances.'),
