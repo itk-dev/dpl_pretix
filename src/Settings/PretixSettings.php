@@ -45,6 +45,12 @@ class PretixSettings extends AbstractSettings {
    * Decide if the settings are ready for use.
    */
   public function isReady(): bool {
+    // Skip any update hooks when Drupal is updating, cf.
+    // https://git.drupalcode.org/project/drupal/-/blob/10.6.x/core/authorize.php?ref_type=heads
+    if (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE == 'update') {
+      return FALSE;
+    }
+
     return !empty(trim($this->url ?? ''));
   }
 
