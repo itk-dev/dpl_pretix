@@ -933,7 +933,6 @@ final class EntityHelper {
     /** @var \Drupal\Core\Field\EntityReferenceFieldItemList<\Drupal\paragraphs\Entity\Paragraph> $field */
     $field = $event->get($fieldName);
     $categories = $field->referencedEntities();
-    /** @var \Drupal\paragraphs\Entity\Paragraph $category */
     foreach ($categories as $category) {
       $price = (float) $category->get($priceFieldName)->getString();
       // We support only one price.
